@@ -1,40 +1,96 @@
-using NUnit.Framework;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using Newtonsoft.Json;
+using System;
+using Mono.Cecil.Cil;
 
-public class TemplateManager : MonoBehaviour
+public class TemplateManager
 {
-    public List<StatModifier> LoadedTemplates { get; private set; }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private static TemplateManager _instance;
+    public static TemplateManager Instance => _instance ??= new TemplateManager();
+
+    public Dictionary<string, Unit> UnitTemplates { get; private set; }
+    public Dictionary<string, StatModifier> ModifierTemplates { get; private set; }
+
+    private readonly string _unitsSavePath;
+    private readonly string _modifierSavePath;
+
+    public TemplateManager()
     {
-        LoadModifiers();
+        UnitTemplates = new Dictionary<string, Unit>();
+        ModifierTemplates = new Dictionary<string, StatModifier>();
+
+        _unitsSavePath = Path.Combine(Application.persistentDataPath, "unit_templates.json");
+        _modifierSavePath = Path.Combine(Application.persistentDataPath, "modifier_templates.json");
     }
-
-    // Load json file with modifiers
-    private void LoadModifiers()
+    /// <summary>
+    /// Loads templates from JSON file to memory
+    /// </summary>
+    public void LoadTemplates()
     {
-        string filePath = Path.Combine(Application.streamingAssetsPath, "modifiers.json");
-
-        if (File.Exists(filePath))
+        if (File.Exists(_unitsSavePath))
         {
-            string jsonContent = File.ReadAllText(filePath);
-
-            ModifierDatabase database = JsonUtility.FromJson<ModifierDatabase>(jsonContent);
-
-            LoadedTemplates = database.modifiers;
-            Debug.Log($"Succesfuly loade {LoadedTemplates.Count} modifier templates");
+            string unitsJson = File.ReadAllText(_unitsSavePath);
+            UnitTemplates = JsonConvert.DeserializeObject<Dictionary<string, Unit>>(unitsJson)
+                ?? new Dictionary<string, Unit>();
+            Debug.Log($"Loaded {UnitTemplates.Count} unit templates from {_unitsSavePath}");
         }
         else
         {
-            Debug.LogError("modifier config file not found!");
+            Debug.LogWarning("Unit template files does not exist.");
+        }
+
+        if (File.Exists(_modifierSavePath))
+        {
+            string modifiersJson = File.ReadAllText(_modifierSavePath);
+            ModifierTemplates = JsonConvert.DeserializeObject<Dictionary<string, StatModifier>>(modifiersJson)
+                ?? new Dictionary<string, StatModifier>();
+            Debug.Log($"Loaded {ModifierTemplates.Count} modifier templates from {_modifierSavePath}");
+        }
+    }
+    /// <summary>
+    /// Saves current dictionary state into JSON file
+    /// </summary>
+    public void SaveTemplates()
+    {
+        try
+        {
+            string unitsJson = JsonConvert.SerializeObject(UnitTemplates, Formatting.Indented);
+            File.WriteAllText(_unitsSavePath, unitsJson);
+
+            string modifiersJson = JsonConvert.SerializeObject(ModifierTemplates, Formatting.Indented);
+            File.WriteAllText(_modifierSavePath, modifiersJson);
+
+            Debug.Log("Succesfully saves templates to JSON file");
+        }
+        catch (Exception ex)
+        {
+            Debug.Log($"Error occured while saving templates: {ex.Message}");
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void UpdateTemplatesFromCsv(List<Unit> importedUnits, List<StatModifier> importedModifiers)
     {
-        
+        UnitTemplates.Clear();
+        ModifierTemplates.Clear();
+
+        foreach(var unit in importedUnits)
+        {
+            if (!UnitTemplates.ContainsKey(unit.Id))
+            {
+                UnitTemplates.Add(unit.Id, unit);
+            }
+        }
+
+        foreach (var modifier in importedModifiers)
+        {
+            if (!ModifierTemplates.ContainsKey(modifier.Id))
+            {
+                ModifierTemplates.Add(modifier.Id, modifier);
+            }
+        }
+
+        SaveTemplates();
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -66,5 +67,29 @@ public class Unit
         };
 
         //unit.AddModifier(customMod);
+    }
+
+    public Unit CloneUnit()
+    {
+        var clone = new Unit
+        {
+            Id = Guid.NewGuid().ToString(),
+            Faction = this.Faction,
+            UnitName = this.UnitName,
+            BaseAttack = this.BaseAttack,
+            BaseDefence = this.BaseDefence,
+            BaseMorale = this.BaseMorale,
+            RangedAttack = this.RangedAttack,
+            RangedDefence = this.RangedDefence,
+            Range = this.Range,
+            Mobility = this.Mobility,
+            Durability = this.Durability,
+            SoldierCount = this.SoldierCount,
+            StartingSoldierCount = this.StartingSoldierCount
+        };
+
+        clone.InitializeHp();
+
+        return clone;
     }
 }
