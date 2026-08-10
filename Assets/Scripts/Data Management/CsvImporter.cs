@@ -18,7 +18,7 @@ public static class CsvImporter
 
         if (!File.Exists(filePath))
         {
-            Debug.LogError($"[CsvImporter] Unit file not found in: {filePath}");
+            Debug.LogError($"[CsvImporter] Unit file not found in : {filePath}");
             return units;
         }
 

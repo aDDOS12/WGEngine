@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Unit
+public class Unit : IModifiable
 {
     public string Id { get; set; }
     public string Faction { get; set; }
@@ -66,7 +66,7 @@ public class Unit
             MoraleBonus = customMorale
         };
 
-        //unit.AddModifier(customMod);
+        this.AddModifier(customMod);
     }
 
     public Unit CloneUnit()
