@@ -35,6 +35,38 @@ MonoBehaviour:
     m_Key: btn_quit
     m_Metadata:
       m_Items: []
+  - m_Id: 333157147000832
+    m_Key: label_options
+    m_Metadata:
+      m_Items: []
+  - m_Id: 333235496599552
+    m_Key: label_language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 333484072026112
+    m_Key: label_resolution
+    m_Metadata:
+      m_Items: []
+  - m_Id: 333556792868864
+    m_Key: label_displaymode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 333668210360320
+    m_Key: dropdown_label_fullscreen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 333822451695616
+    m_Key: dropdown_label_windowed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 333878298853376
+    m_Key: dropdown_label_borderless
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335784412889088
+    m_Key: btn_options_return
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

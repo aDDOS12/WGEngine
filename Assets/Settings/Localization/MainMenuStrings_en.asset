@@ -38,6 +38,38 @@ MonoBehaviour:
     m_Localized: Quit
     m_Metadata:
       m_Items: []
+  - m_Id: 333157147000832
+    m_Localized: Options
+    m_Metadata:
+      m_Items: []
+  - m_Id: 333235496599552
+    m_Localized: Language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 333484072026112
+    m_Localized: Resolution
+    m_Metadata:
+      m_Items: []
+  - m_Id: 333556792868864
+    m_Localized: Display Mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 333668210360320
+    m_Localized: Fullscreen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 333822451695616
+    m_Localized: Windowed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 333878298853376
+    m_Localized: Windowed Borderless
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335784412889088
+    m_Localized: Return to Menu
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

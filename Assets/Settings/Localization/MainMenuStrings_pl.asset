@@ -38,6 +38,38 @@ MonoBehaviour:
     m_Localized: "Wyj\u015Bcie"
     m_Metadata:
       m_Items: []
+  - m_Id: 333157147000832
+    m_Localized: Opcje
+    m_Metadata:
+      m_Items: []
+  - m_Id: 333235496599552
+    m_Localized: "J\u0119zyk"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 333484072026112
+    m_Localized: "Rozdzielczo\u015B\u0107"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 333556792868864
+    m_Localized: Tryb Ekranu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 333668210360320
+    m_Localized: "Pe\u0142ny Ekran"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 333822451695616
+    m_Localized: W Oknie
+    m_Metadata:
+      m_Items: []
+  - m_Id: 333878298853376
+    m_Localized: W Oknie bez Ramki
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335784412889088
+    m_Localized: "Powr\xF3t do Menu"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
