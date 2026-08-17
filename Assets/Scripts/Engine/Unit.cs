@@ -55,7 +55,6 @@ public class Unit : IModifiable
         ActiveModifiers.Clear();
     }
 
-    // Placeholder until UI is implemented
     public void ApplyCustomModifier(string customName, int customAttack, float customMorale)
     {
         var customMod = new StatModifier
