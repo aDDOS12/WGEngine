@@ -53,6 +53,10 @@ public class UnitEditorController : MonoBehaviour
     [Header("Przyciski (Nawigacja)")]
     public Button btnEditBadge;
     public Button btnConfirmBadge;
+    public Button btnSaveUnit;
+    public Button btnDiscardUnit;
+    public Button btnCreateUnit;
+    public Button btnDeleteUnits;
 
     [Header("Stan Edytora (Logika)")]
     private bool isEditingMode = false;
@@ -71,6 +75,16 @@ public class UnitEditorController : MonoBehaviour
         // Navigation Buttons
         btnEditBadge.onClick.AddListener(ShowBadgeEditor);
         btnConfirmBadge.onClick.AddListener(ShowStatsSection);
+        btnSaveUnit.onClick.AddListener(SaveUnitFromEditor);
+        btnDiscardUnit.onClick.AddListener(() => { ClearEditorForm(); }); // tymczasowo czyścimy formularz, TODO: dodać logikę ukrywania panelu edycji
+        btnCreateUnit.onClick.AddListener(() =>
+        {
+            isEditingMode = false;
+            currentEditedUnit = null;
+            ClearEditorForm();
+            ShowStatsSection();
+        });
+        btnDeleteUnits.onClick.AddListener(DeleteCurrentUnit);
 
 
         sliderR.value = 255;
@@ -99,6 +113,53 @@ public class UnitEditorController : MonoBehaviour
     }
 
     // button methods
+
+    private void ClearEditorForm()
+    {
+        inputUnitName.text = "";
+        inputBaseAttack.text = "0";
+        inputBaseDefence.text = "0";
+        inputRangedAttack.text = "0";
+        inputRangedDefence.text = "0";
+        inputRange.text = "0";
+        inputMorale.text = "0";
+        inputDurability.text = "0";
+        inputMobility.text = "0";
+        inputSoldierCount.text = "0";
+
+        dropdownCategory.value = 0;
+        dropdownType.value = 0;
+        dropdownQuality.value = 0;
+        dropdownIcon.value = 0;
+
+        sliderR.value = 255;
+        sliderG.value = 255;
+        sliderB.value = 255;
+
+        UpdateBadgeGraphics();
+        UpdateColorFromSliders();
+    }
+
+    private void DeleteCurrentUnit()
+    {
+        if (isEditingMode && currentEditedUnit != null)
+        {
+            string idToRemove = currentEditedUnit.Id;
+
+            TemplateManager.Instance.UnitTemplates.Remove(idToRemove);
+            TemplateManager.Instance.VisualTemplates.Remove(idToRemove);
+
+            TemplateManager.Instance.SaveTemplates();
+
+            Debug.Log($"Usunięto chorągiew: {currentEditedUnit.UnitName}");
+
+            // TODO: odśwież listę po prawej stronie
+
+            ClearEditorForm();
+            isEditingMode = false;
+            currentEditedUnit = null;
+        }
+    }
 
     public void ShowBadgeEditor()
     {
@@ -208,13 +269,37 @@ public class UnitEditorController : MonoBehaviour
         inputMobility.text = unitToEdit.Mobility.ToString();
         inputSoldierCount.text = unitToEdit.SoldierCount.ToString();
 
-        // TODO: wizualizacja i kolor
+        // Visualisation
+        if (TemplateManager.Instance.VisualTemplates.TryGetValue(unitToEdit.Id, out UnitVisualData visualData))
+        {
+            dropdownCategory.value = visualData.CategoryIndex;
+            dropdownType.value = visualData.TypeIndex;
+            dropdownQuality.value = visualData.QualityIndex;
+            dropdownIcon.value = visualData.IconIndex;
+        }
+        else
+        {
+            dropdownCategory.value = 0;
+            dropdownType.value = 0;
+            dropdownQuality.value = 0;
+            dropdownIcon.value = 0;
+        }
 
-        // TODO: ustawienia koloru w oparciu o obiekt z backendu
+        // Color
+        if (!string.IsNullOrEmpty(unitToEdit.Faction) && TemplateManager.Instance.FactionTemplates.TryGetValue(unitToEdit.Faction, out FactionData factionData))
+        {
+            inputHex.text = factionData.ColorHexCode;
+            UpdateColorFromHex();
+        }
+        else
+        {
+            sliderR.value = 255;
+            sliderG.value = 255;
+            sliderB.value = 255;
+            UpdateColorFromSliders();
+        }
 
         UpdateBadgeGraphics();
-        UpdateColorFromSliders();
-
         ShowStatsSection();
     }
 
@@ -223,6 +308,23 @@ public class UnitEditorController : MonoBehaviour
         if (!isEditingMode || currentEditedUnit == null)
         {
             currentEditedUnit = new Unit();
+            // Assign unique ID to new Unit
+            currentEditedUnit.Id = System.Guid.NewGuid().ToString();
+            // Assign Unit to currently selected faction
+            if (dropdownFactionSelect != null && dropdownFactionSelect.options.Count > 0)
+            {
+                string selectedText = dropdownFactionSelect.options[dropdownFactionSelect.value].text;
+
+                if (dropdownFactionSelect.value == 0 && selectedText == "Wybierz Frakcję")
+                {
+                    Debug.LogWarning("Nie przypisano frakcji! Jednostka pozostaje neutralna.");
+                    currentEditedUnit.Faction = "Brak Frakcji";
+                }
+                else
+                {
+                    currentEditedUnit.Faction = selectedText;
+                }
+            }
         }
 
         currentEditedUnit.UnitName = inputUnitName.text;
@@ -239,18 +341,50 @@ public class UnitEditorController : MonoBehaviour
         currentEditedUnit.Durability = int.TryParse(inputDurability.text, out int dur) ? dur : 0;
         currentEditedUnit.Mobility = int.TryParse(inputMobility.text, out int mob) ? mob : 0;
         currentEditedUnit.SoldierCount = int.TryParse(inputSoldierCount.text, out int count) ? count : 0;
+        currentEditedUnit.StartingSoldierCount = currentEditedUnit.SoldierCount;
 
-        // TODO: wizualizacja i kolory
+        // Update UnitVisualData object
+        UnitVisualData newVisualData = new UnitVisualData
+        {
+            UnitId = currentEditedUnit.Id,
+            CategoryIndex = dropdownCategory.value,
+            TypeIndex = dropdownType.value,
+            QualityIndex = dropdownQuality.value,
+            IconIndex = dropdownIcon.value
+        };
+        // Add/overrite Dictionary in TemplateManager
+        TemplateManager.Instance.VisualTemplates[currentEditedUnit.Id] = newVisualData;
+
+        // Update faction color (if Unit has defined faction)
+        if (!string.IsNullOrEmpty(currentEditedUnit.Faction))
+        {
+            FactionData updatedFaction = new FactionData
+            {
+                Id = currentEditedUnit.Faction,
+                ColorHexCode = inputHex.text
+            };
+            TemplateManager.Instance.FactionTemplates[currentEditedUnit.Faction] = updatedFaction;
+        }
+
+        // Add/overrite unit in database
+        TemplateManager.Instance.UnitTemplates[currentEditedUnit.Id] = currentEditedUnit;
+
+        // TODO: wyczyszczenie formularza albo powrót do głownego widoku
+        // Save to file
+        TemplateManager.Instance.SaveTemplates();
 
         if (isEditingMode)
         {
             Debug.Log($"Zakutalizowano istniejącą chorągiew: {inputUnitName.text}");
-            // TODO: podmiana danych w liście frakcji
+            // TODO: odswiezenie przycisku na liscie
         }
         else
         {
             Debug.Log($"Utworzono nową chorągiew: {inputUnitName.text}");
+            // TODO: stworzenie przycisku na liście
         }
-        // TODO: wyczyszczenie formularza albo powrót do głownego widoku
+
+        // Return to stats view after saving
+        ShowStatsSection();
     }
 }
