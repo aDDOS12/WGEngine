@@ -12,6 +12,7 @@ public class StatModifier
     public int RangedDefenceBonus { get; set; }
     public int MobilityBonus { get; set; }
     public float MoraleBonus { get; set; }
+    public int RangeBonus { get; set; }
 }
 
 // JSON wrapper

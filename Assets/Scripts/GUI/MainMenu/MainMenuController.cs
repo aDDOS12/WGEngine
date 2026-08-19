@@ -31,8 +31,6 @@ public class MainMenuController : MonoBehaviour
     // Method for "Faction Editor" button
     public void OnFactionEditorClicker()
     {
-        //Debug.Log("Otwieranie Edytora Frakcji...");
-        // TODO: logika wczytywania edytora
         mainMenuPanel.SetActive(false);
         factionEditorPanel.SetActive(true);
     }
@@ -40,8 +38,6 @@ public class MainMenuController : MonoBehaviour
     // Method for "Modifier Edition" button
     public void OnModifierEditorClicked()
     {
-        //Debug.Log("Otwieranie Edytora Modyfikatorów...");
-        // TODO: logika wczytywania edytora
         mainMenuPanel.SetActive(false);
         modifierEditorPanel.SetActive(true);
     }
@@ -49,8 +45,6 @@ public class MainMenuController : MonoBehaviour
     // Method for "Options" button
     public void OnOptionsClicked()
     {
-        //Debug.Log("Otwieranie menu opcji...");
-        // TODO: panel UI z opcjami
         mainMenuPanel.SetActive(false);
         optionsPanel.SetActive(true);
     }

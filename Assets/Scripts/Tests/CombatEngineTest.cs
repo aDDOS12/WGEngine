@@ -22,7 +22,7 @@ public class CombatEngineTest : MonoBehaviour
             StartingSoldierCount = 100,
             RangedAttack = 0,
             RangedDefence = 20,
-            Range = 0
+            BaseRange = 0
         };
         attacker.InitializeHp();
 
@@ -39,7 +39,7 @@ public class CombatEngineTest : MonoBehaviour
             StartingSoldierCount = 100,
             RangedAttack = 0,
             RangedDefence = 10,
-            Range = 0
+            BaseRange = 0
         };
         defender.InitializeHp();
 
@@ -68,7 +68,7 @@ public class CombatEngineTest : MonoBehaviour
             StartingSoldierCount = 100,
             RangedAttack = 0,
             RangedDefence = 20,
-            Range = 0
+            BaseRange = 0
         };
         attacker1.InitializeHp();
 
@@ -85,7 +85,7 @@ public class CombatEngineTest : MonoBehaviour
             StartingSoldierCount = 120,
             RangedAttack = 0,
             RangedDefence = 40,
-            Range = 0
+            BaseRange = 0
         };
         attacker2.InitializeHp();
 
@@ -102,7 +102,7 @@ public class CombatEngineTest : MonoBehaviour
             StartingSoldierCount = 160,
             RangedAttack = 0,
             RangedDefence = 30,
-            Range = 0
+            BaseRange = 0
         };
         defender1.InitializeHp();
 

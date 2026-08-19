@@ -48,7 +48,7 @@ public static class CsvImporter
                     BaseMorale = ParseInt(values[5]),
                     RangedAttack = ParseInt(values[6]),
                     RangedDefence = ParseInt(values[7]),
-                    Range = ParseInt(values[8]),
+                    BaseRange = ParseInt(values[8]),
                     Mobility = ParseInt(values[9]),
                     Durability = ParseInt(values[10]),
                     SoldierCount = ParseInt(values[11]),
@@ -95,7 +95,7 @@ public static class CsvImporter
 
                 string[] values = lines[i].Split(separator);
 
-                if (values.Length < 8)
+                if (values.Length < 9)
                 {
                     Debug.LogWarning($"[CsvImporter] Not enough columns in in {i + 1}. Skipping");
                     continue;
@@ -109,8 +109,9 @@ public static class CsvImporter
                     DefenceBonus = ParseInt(values[3]),
                     RangedAttackBonus = ParseInt(values[4]),
                     RangedDefenceBonus = ParseInt(values[5]),
-                    MobilityBonus = ParseInt(values[6]),
-                    MoraleBonus = float.TryParse(values[7].Trim(), out float moraleResult) ? moraleResult : 0f
+                    RangeBonus = ParseInt(values[6]),
+                    MobilityBonus = ParseInt(values[7]),
+                    MoraleBonus = float.TryParse(values[8].Trim(), out float moraleResult) ? moraleResult : 0f
                 };
 
                 modifiers.Add(modifier);
