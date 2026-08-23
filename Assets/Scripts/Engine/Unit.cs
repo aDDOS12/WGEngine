@@ -20,6 +20,7 @@ public class Unit : IModifiable
     public int CurrentHp { get; set; }
     public int StartingSoldierCount { get; set; }
     public bool IsBroken { get; set; }
+    public UnitVisualData VisualData { get; set; }
     public List<StatModifier> ActiveModifiers { get; private set; } = new List<StatModifier>();
     public int Attack => BaseAttack + ActiveModifiers.Sum(m => m.AttackBonus);
     public int Defence => BaseDefence + ActiveModifiers.Sum(m => m.DefenceBonus);
@@ -85,7 +86,8 @@ public class Unit : IModifiable
             Mobility = this.Mobility,
             Durability = this.Durability,
             SoldierCount = this.SoldierCount,
-            StartingSoldierCount = this.StartingSoldierCount
+            StartingSoldierCount = this.StartingSoldierCount,
+            VisualData = this.VisualData
         };
 
         clone.InitializeHp();

@@ -74,6 +74,22 @@ public class TemplateManager
                 ?? new Dictionary<string, UnitVisualData>();
             Debug.Log($"Loaded {VisualTemplates.Count} visual templates from {_visualSavePath}");
         }
+
+        foreach(var unitKvp in UnitTemplates)
+        {
+            string unitId = unitKvp.Key;
+            Unit unit = unitKvp.Value;
+
+            if (VisualTemplates.TryGetValue(unitId, out UnitVisualData visualData))
+            {
+                unit.VisualData = visualData;
+            }
+            else
+            {
+                Debug.LogWarning($"[TemplateManager] Brak przypisanych danych wizualnych dla jednostki: {unit.UnitName}. Stworzono domyślny profil.");
+                unit.VisualData = new UnitVisualData();
+            }
+        }
     }
     /// <summary>
     /// Saves current dictionary state into JSON file
