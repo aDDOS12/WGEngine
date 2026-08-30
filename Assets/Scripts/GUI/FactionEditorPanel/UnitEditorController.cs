@@ -29,6 +29,7 @@ public class UnitEditorController : MonoBehaviour
     public Button btnDiscardUnit;
     public Button btnCreateUnit;
     public Button btnDeleteUnits;
+    public Button btnDiscardChanges;
 
     [Header("Stan Edytora (Logika)")]
     private bool isEditingMode = false;
@@ -57,6 +58,8 @@ public class UnitEditorController : MonoBehaviour
         btnConfirmBadge.onClick.AddListener(ShowStatsSection);
         btnSaveUnit.onClick.AddListener(SaveUnitFromEditor);
         btnDiscardUnit.onClick.AddListener(() => { ClearEditorForm(); }); // tymczasowo czyścimy formularz
+        btnDiscardChanges.onClick.AddListener(() => { ShowStatsSection(); });
+
 
         btnCreateUnit.onClick.AddListener(() =>
         {

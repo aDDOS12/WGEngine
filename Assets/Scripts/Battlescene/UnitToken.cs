@@ -21,6 +21,10 @@ public class UnitToken : MonoBehaviour
     [Header("Pływające UI Pionka")]
     public TMP_Text textUnitName;
     public TMP_Text textSoldierCount;
+    public Transform textContainer;
+    public float textOffsetDistance = 0.5f;
+
+    public Vector2 FacingDirection { get; private set; } = Vector2.up;
 
     [Header("Interakcja")]
     public GameObject selectionHighlight;
@@ -89,6 +93,18 @@ public class UnitToken : MonoBehaviour
         if (selectionHighlight != null)
         {
             selectionHighlight.SetActive(isSelected);
+        }
+    }
+
+    public void SetFacingDirection(Vector2 direction)
+    {
+        if (direction == Vector2.zero) return;
+
+        FacingDirection = direction.normalized;
+
+        if (textContainer != null)
+        {
+            textContainer.localPosition = -FacingDirection * textOffsetDistance;
         }
     }
 }

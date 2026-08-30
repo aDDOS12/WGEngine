@@ -8,6 +8,7 @@ public class DataManager
     private static DataManager _instance;
     public static DataManager Instance => _instance ??= new DataManager();
     public List<Unit> ActiveUnits { get; private set; } = new List<Unit>();
+    public BattleConfiguration CurrentBattleConfig { get; set; }
 
     private DataManager()
     {
