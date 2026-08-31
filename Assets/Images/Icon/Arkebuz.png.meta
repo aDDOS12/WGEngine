@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 3fa73d0cd7074ad4b82221c36e04eb4e
+guid: b5f0703ee26e9f845bdcb04fc1e447d0
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8752600997852034484
-    second: obramowka_0
+      213: 8343961708748660562
+    second: Arkebuz_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -24,7 +24,7 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
     flipGreenChannel: 0
-  isReadable: 1
+  isReadable: 0
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: obramowka_0
+      name: Arkebuz_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 400
-        height: 160
+        x: 151
+        y: 67
+        width: 102
+        height: 22
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c4acc4604c3888680800000000000000
-      internalID: -8752600997852034484
+      spriteID: 25fdc6547f4bbc370800000000000000
+      internalID: 8343961708748660562
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      obramowka_0: -8752600997852034484
+      Arkebuz_0: 8343961708748660562
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

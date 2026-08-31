@@ -135,9 +135,9 @@ TextureImporter:
       name: Wlocznie_0
       rect:
         serializedVersion: 2
-        x: 167
+        x: 171
         y: 39
-        width: 22
+        width: 14
         height: 74
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -157,9 +157,9 @@ TextureImporter:
       name: Wlocznie_1
       rect:
         serializedVersion: 2
-        x: 191
+        x: 195
         y: 39
-        width: 22
+        width: 14
         height: 74
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -179,9 +179,9 @@ TextureImporter:
       name: Wlocznie_2
       rect:
         serializedVersion: 2
-        x: 215
+        x: 219
         y: 39
-        width: 22
+        width: 14
         height: 74
       alignment: 0
       pivot: {x: 0, y: 0}

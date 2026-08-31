@@ -1,10 +1,16 @@
 fileFormatVersion: 2
-guid: 3fa73d0cd7074ad4b82221c36e04eb4e
+guid: 2d330b8e01c36a448b75ba70a02af69f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8752600997852034484
-    second: obramowka_0
+      213: 4046779580531921497
+    second: Pika_0
+  - first:
+      213: 5244574264159733082
+    second: Pika_1
+  - first:
+      213: -4613694323086164092
+    second: Pika_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -24,7 +30,7 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
     flipGreenChannel: 0
-  isReadable: 1
+  isReadable: 0
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
@@ -126,13 +132,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: obramowka_0
+      name: Pika_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 400
-        height: 160
+        x: 182
+        y: 38
+        width: 12
+        height: 86
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +147,52 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c4acc4604c3888680800000000000000
-      internalID: -8752600997852034484
+      spriteID: 952d8e5769c092830800000000000000
+      internalID: 4046779580531921497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pika_1
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 38
+        width: 12
+        height: 86
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a55856d918878c840800000000000000
+      internalID: 5244574264159733082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pika_2
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 38
+        width: 12
+        height: 86
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48f7632257dd8ffb0800000000000000
+      internalID: -4613694323086164092
       vertices: []
       indices: 
       edges: []
@@ -161,7 +211,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      obramowka_0: -8752600997852034484
+      Pika_0: 4046779580531921497
+      Pika_1: 5244574264159733082
+      Pika_2: -4613694323086164092
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -17,7 +17,7 @@ public class RosterButton : MonoBehaviour
 
         if (unitIconImage != null && template.VisualData != null) 
         {
-            unitIconImage.sprite = template.VisualData.TokenSprite;
+            unitIconImage.sprite = TokenGraphicsManager.Instance.GetBakedSprite(template.VisualData, factionColor);
 
             unitIconImage.preserveAspect = true;
         }
