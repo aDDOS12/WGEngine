@@ -918,6 +918,14 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 223c71724ff3c594aa19fa683c3b21e6, type: 3}
   - {fileID: 21300000, guid: 68499cb5aa979e9449a31f96af89e3dc, type: 3}
   - {fileID: 21300000, guid: aa785041430307b409f130fa8715cd8d, type: 3}
+  - {fileID: 21300000, guid: 2d330b8e01c36a448b75ba70a02af69f, type: 3}
+  - {fileID: 21300000, guid: b5f0703ee26e9f845bdcb04fc1e447d0, type: 3}
+  - {fileID: 21300000, guid: 74dc193e4937eea4fbf662def85fd30b, type: 3}
+  - {fileID: 21300000, guid: 11acfa655d2420f46b49881a73e6e2d0, type: 3}
+  - {fileID: 21300000, guid: 256fd7ac16bb71040bf96d9e6157c480, type: 3}
+  - {fileID: 21300000, guid: 2386434b0216ef54aa64fd4af8f9e139, type: 3}
+  - {fileID: 21300000, guid: a65b48b1f09b06846b73408833254249, type: 3}
+  - {fileID: 21300000, guid: efb96d134e79620498817086a3ab889f, type: 3}
   textUnitName: {fileID: 4777959484607839729}
   textSoldierCount: {fileID: 4421975179395444715}
   textContainer: {fileID: 5892458693804494096}

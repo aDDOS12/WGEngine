@@ -12,6 +12,9 @@ public class BattleManager : MonoBehaviour
     [Header("Referencje Planszy")]
     public Transform tokenContainer;
 
+    [Header("Prefaby")]
+    public GameObject unitTokenPrefab;
+
     private List<UnitToken> activeUnitsOnBoard = new List<UnitToken>();
 
     void Awake()
@@ -92,6 +95,31 @@ public class BattleManager : MonoBehaviour
         HighlightedUnit.SetSelected(true);
 
         Debug.Log($"[BattleManager] Zaznaczono jednostkę: {HighlightedUnit.UnitData.UnitName}");
+    }
+
+    public void SpawnUnitOnBoard(Unit template, Color factionColor, Vector3 position)
+    {
+        if (unitTokenPrefab == null)
+        {
+            Debug.LogError("[BattleManager] Brak przypisanego prefabu UnitToken!");
+            return;
+        }
+
+        Unit newUnit = template.CloneUnit();
+
+        GameObject tokenObj = Instantiate(unitTokenPrefab, position, Quaternion.identity, tokenContainer);
+        tokenObj.name = $"Token_{newUnit.UnitName}";
+
+        UnitToken tokenScript = tokenObj.GetComponent<UnitToken>();
+        if (tokenScript != null)
+        {
+            tokenScript.InitializeUnit(newUnit, newUnit.VisualData, factionColor);
+            tokenScript.SetFacingDirection(Vector2.up);
+
+            activeUnitsOnBoard.Add(tokenScript);
+
+            SelectUnit(tokenScript);
+        }
     }
 
     // Do archiwizacji

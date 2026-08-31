@@ -79,8 +79,8 @@ public class TokenGraphicsManager : MonoBehaviour
 
         Sprite bakedSprite = Sprite.Create(texture, new Rect(0, 0, textureWidth, textureHeight), new Vector2(0.5f, 0.5f), pixelsPerUnit);
 
-        Destroy(camObj);
-        Destroy(holder);
+        DestroyImmediate(camObj);
+        DestroyImmediate(holder);
         RenderTexture.ReleaseTemporary(rt);
 
         return bakedSprite;

@@ -23,6 +23,9 @@ public class BattleSetupUI : MonoBehaviour
 
     void Start()
     {
+        if (battleStartPanel != null) battleStartPanel.SetActive(true);
+        if (battleInterface != null) battleInterface.SetActive(false);
+
         if (TemplateManager.Instance.FactionTemplates.Count == 0)
         {
             TemplateManager.Instance.LoadTemplates(); // Sprawdzenie czy dane sa zaladowane
@@ -50,7 +53,14 @@ public class BattleSetupUI : MonoBehaviour
 
     private void StartBattle()
     {
-        string battleId = string.IsNullOrWhiteSpace(battleNameInput.text) ? "Nieznana_Bitwa" : battleNameInput.text;
+        if (string.IsNullOrEmpty(battleNameInput.text))
+        {
+            Debug.LogWarning("[BattleSetupUI] Musisz podać nazwę bitwy, aby kontynuować!");
+            // TODO: referencja do bledu tekstu
+            return;
+        }
+
+        string battleId = battleNameInput.text;
 
         List<string> defenders = new List<string>();
         List<string> attackers = new List<string>();
