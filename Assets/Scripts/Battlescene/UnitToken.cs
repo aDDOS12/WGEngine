@@ -65,7 +65,7 @@ public class UnitToken : MonoBehaviour
         }
     }
 
-    private void UpdateVisual()
+    public void UpdateVisual()
     {
         if (UnitData == null) return;
 
@@ -73,7 +73,7 @@ public class UnitToken : MonoBehaviour
 
         if (textSoldierCount != null)
         {
-            textSoldierCount.text = $"{UnitData.SoldierCount} / {UnitData.StartingSoldierCount}";
+            textSoldierCount.text = $"{UnitData.SoldierCount} / {UnitData.TemplateSoldierCount}";
 
             if (UnitData.IsBroken)
             {

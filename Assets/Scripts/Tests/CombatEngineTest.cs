@@ -20,8 +20,8 @@ public class CombatEngineTest : MonoBehaviour
             Durability = 50,
             SoldierCount = 100,
             StartingSoldierCount = 100,
-            RangedAttack = 0,
-            RangedDefence = 20,
+            BaseRangedAttack = 0,
+            BaseRangedDefence = 20,
             BaseRange = 0
         };
         attacker.InitializeHp();
@@ -37,8 +37,8 @@ public class CombatEngineTest : MonoBehaviour
             Durability = 30,
             SoldierCount = 100,
             StartingSoldierCount = 100,
-            RangedAttack = 0,
-            RangedDefence = 10,
+            BaseRangedAttack = 0,
+            BaseRangedDefence = 10,
             BaseRange = 0
         };
         defender.InitializeHp();
@@ -66,8 +66,8 @@ public class CombatEngineTest : MonoBehaviour
             Durability = 50,
             SoldierCount = 100,
             StartingSoldierCount = 100,
-            RangedAttack = 0,
-            RangedDefence = 20,
+            BaseRangedAttack = 0,
+            BaseRangedDefence = 20,
             BaseRange = 0
         };
         attacker1.InitializeHp();
@@ -83,8 +83,8 @@ public class CombatEngineTest : MonoBehaviour
             Durability = 30,
             SoldierCount = 120,
             StartingSoldierCount = 120,
-            RangedAttack = 0,
-            RangedDefence = 40,
+            BaseRangedAttack = 0,
+            BaseRangedDefence = 40,
             BaseRange = 0
         };
         attacker2.InitializeHp();
@@ -100,8 +100,8 @@ public class CombatEngineTest : MonoBehaviour
             Durability = 20,
             SoldierCount = 160,
             StartingSoldierCount = 160,
-            RangedAttack = 0,
-            RangedDefence = 30,
+            BaseRangedAttack = 0,
+            BaseRangedDefence = 30,
             BaseRange = 0
         };
         defender1.InitializeHp();

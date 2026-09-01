@@ -1,5 +1,6 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class BattleManager : MonoBehaviour
@@ -16,6 +17,9 @@ public class BattleManager : MonoBehaviour
     public GameObject unitTokenPrefab;
 
     private List<UnitToken> activeUnitsOnBoard = new List<UnitToken>();
+
+    public event Action<UnitToken> OnUnitSelected;
+    public event Action OnUnitDeselected;
 
     void Awake()
     {
@@ -83,6 +87,7 @@ public class BattleManager : MonoBehaviour
             HighlightedUnit.SetSelected(false);
             HighlightedUnit = null;
             Debug.Log("[BattleManager] Odznaczono jednostkę.");
+            OnUnitDeselected?.Invoke();
             return;
         }
 
@@ -95,6 +100,7 @@ public class BattleManager : MonoBehaviour
         HighlightedUnit.SetSelected(true);
 
         Debug.Log($"[BattleManager] Zaznaczono jednostkę: {HighlightedUnit.UnitData.UnitName}");
+        OnUnitSelected?.Invoke(HighlightedUnit);
     }
 
     public void SpawnUnitOnBoard(Unit template, Color factionColor, Vector3 position)

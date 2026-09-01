@@ -80,6 +80,16 @@ public class TemplateManager
             string unitId = unitKvp.Key;
             Unit unit = unitKvp.Value;
 
+            if (unit.TemplateSoldierCount == 0 && unit.SoldierCount > 0)
+            {
+                unit.TemplateSoldierCount = unit.SoldierCount;
+
+                if (unit.StartingSoldierCount == 0)
+                {
+                    unit.StartingSoldierCount = unit.SoldierCount;
+                }
+            }
+
             if (VisualTemplates.TryGetValue(unitId, out UnitVisualData visualData))
             {
                 unit.VisualData = visualData;

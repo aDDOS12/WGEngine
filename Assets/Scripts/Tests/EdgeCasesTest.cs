@@ -18,9 +18,9 @@ public class EdgeCasesTest : MonoBehaviour
         CombatEngine engine = new CombatEngine();
 
         // Strzelec z dużym zasięgiem (Range = 10)
-        Unit archer = new Unit { Id = "archer_01", UnitName = "Łucznicy", CurrentHp = 100, SoldierCount = 50, Durability = 2, RangedAttack = 40, BaseRange = 10, RangedDefence = 10 };
+        Unit archer = new Unit { Id = "archer_01", UnitName = "Łucznicy", CurrentHp = 100, SoldierCount = 50, Durability = 2, BaseRangedAttack = 40, BaseRange = 10, BaseRangedDefence = 10 };
         // Piechur bez ataku dystansowego i z małym zasięgiem (Range = 0)
-        Unit infantry = new Unit { Id = "infantry_01", UnitName = "Piechota", CurrentHp = 100, SoldierCount = 50, Durability = 2, RangedAttack = 0, BaseRange = 0, RangedDefence = 15 };
+        Unit infantry = new Unit { Id = "infantry_01", UnitName = "Piechota", CurrentHp = 100, SoldierCount = 50, Durability = 2, BaseRangedAttack = 0, BaseRange = 0, BaseRangedDefence = 15 };
 
         // Dystans starcia to 8. Łucznik dostrzeli, piechota nie.
         engine.ResolveEngagement(archer, infantry, EngagementType.Fire, 8);
@@ -36,8 +36,8 @@ public class EdgeCasesTest : MonoBehaviour
         Unit heroUnit = new Unit { UnitName = "Oddział Graczy", BaseAttack = 50, BaseMorale = 50 };
 
         // Ważne: przed testem odkomentuj this.AddModifier(customMod) w klasie Unit!
-        heroUnit.ApplyCustomModifier("Błogosławieństwo MG", 20, 10f);
-        heroUnit.ApplyCustomModifier("Szarża z górki", 30, 0f);
+        //heroUnit.ApplyCustomModifier("Błogosławieństwo MG", 20, 10f);
+        //heroUnit.ApplyCustomModifier("Szarża z górki", 30, 0f);
 
         Debug.Log($"Atak po dodaniu dwóch improwizowanych buffów: {heroUnit.Attack} (Oczekiwane 100)");
         Debug.Log($"Ilość aktywnych modyfikatorów: {heroUnit.ActiveModifiers.Count} (Oczekiwane 2)");

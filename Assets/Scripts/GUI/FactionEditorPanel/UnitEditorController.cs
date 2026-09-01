@@ -147,8 +147,8 @@ public class UnitEditorController : MonoBehaviour
         // Combat stats
         inputBaseAttack.text = unitToEdit.BaseAttack.ToString();
         inputBaseDefence.text = unitToEdit.BaseDefence.ToString();
-        inputRangedAttack.text = unitToEdit.RangedAttack.ToString();
-        inputRangedDefence.text = unitToEdit.RangedDefence.ToString();
+        inputRangedAttack.text = unitToEdit.BaseRangedAttack.ToString();
+        inputRangedDefence.text = unitToEdit.BaseRangedDefence.ToString();
         inputRange.text = unitToEdit.BaseRange.ToString();
 
         // Parameters
@@ -205,8 +205,8 @@ public class UnitEditorController : MonoBehaviour
         // combat stats parse
         currentEditedUnit.BaseAttack = int.TryParse(inputBaseAttack.text, out int att) ? att : 0;
         currentEditedUnit.BaseDefence = int.TryParse(inputBaseDefence.text, out int def) ? def : 0;
-        currentEditedUnit.RangedAttack = int.TryParse(inputRangedAttack.text, out int rAtt) ? rAtt : 0;
-        currentEditedUnit.RangedDefence = int.TryParse(inputRangedDefence.text, out int rDef) ? rDef : 0;
+        currentEditedUnit.BaseRangedAttack = int.TryParse(inputRangedAttack.text, out int rAtt) ? rAtt : 0;
+        currentEditedUnit.BaseRangedDefence = int.TryParse(inputRangedDefence.text, out int rDef) ? rDef : 0;
         currentEditedUnit.BaseRange = int.TryParse(inputRange.text, out int rng) ? rng : 0;
 
         // parameters parse
@@ -215,6 +215,7 @@ public class UnitEditorController : MonoBehaviour
         currentEditedUnit.Mobility = int.TryParse(inputMobility.text, out int mob) ? mob : 0;
         currentEditedUnit.SoldierCount = int.TryParse(inputSoldierCount.text, out int count) ? count : 0;
         currentEditedUnit.StartingSoldierCount = currentEditedUnit.SoldierCount;
+        currentEditedUnit.TemplateSoldierCount = currentEditedUnit.SoldierCount;
 
         // Update UnitVisualData object
         UnitVisualData newVisualData = badgeVisualController.GetVisualData(currentEditedUnit.Id);

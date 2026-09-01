@@ -46,13 +46,14 @@ public static class CsvImporter
                     BaseAttack = ParseInt(values[3]),
                     BaseDefence = ParseInt(values[4]),
                     BaseMorale = ParseInt(values[5]),
-                    RangedAttack = ParseInt(values[6]),
-                    RangedDefence = ParseInt(values[7]),
+                    BaseRangedAttack = ParseInt(values[6]),
+                    BaseRangedDefence = ParseInt(values[7]),
                     BaseRange = ParseInt(values[8]),
                     Mobility = ParseInt(values[9]),
                     Durability = ParseInt(values[10]),
                     SoldierCount = ParseInt(values[11]),
-                    StartingSoldierCount = ParseInt(values[12])
+                    StartingSoldierCount = ParseInt(values[12]),
+                    TemplateSoldierCount = ParseInt(values[12])
                 };
 
                 unit.InitializeHp();
