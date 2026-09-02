@@ -1467,8 +1467,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 383204199}
   m_HandleRect: {fileID: 383204198}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.7433334
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -10269,8 +10269,9 @@ GameObject:
   m_Component:
   - component: {fileID: 708529137}
   - component: {fileID: 708529138}
+  - component: {fileID: 708529139}
   m_Layer: 5
-  m_Name: Content
+  m_Name: DefenderContent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10293,7 +10294,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 300}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &708529138
 MonoBehaviour:
@@ -10321,6 +10322,20 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &708529139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 708529136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
+  m_HorizontalFit: 0
+  m_VerticalFit: 2
 --- !u!1 &710344910
 GameObject:
   m_ObjectHideFlags: 0
@@ -26165,7 +26180,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1581387765}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 47962340d7b45b143aabc93fa53281cd, type: 3}
   m_Name: 
@@ -27302,7 +27317,7 @@ GameObject:
   - component: {fileID: 1647815510}
   - component: {fileID: 1647815509}
   m_Layer: 5
-  m_Name: Content
+  m_Name: AttackerContent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

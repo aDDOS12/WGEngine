@@ -139,6 +139,7 @@ public class ModifierPanelUI : MonoBehaviour
 
         contentContainer.SetActive(true);
         UpdateStatsDisplay(currentUnit);
+        UpdateModifierList();
     }
 
     private void HandleUnitDeselected()
