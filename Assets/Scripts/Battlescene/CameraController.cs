@@ -80,6 +80,8 @@ public class CameraController : MonoBehaviour
 
     private void HandleZoom()
     {
+        if (TokenInteraction.IsDraggingToken) return;
+
         float scroll = Mouse.current.scroll.ReadValue().y;
 
         if (scroll != 0)
