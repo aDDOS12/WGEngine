@@ -40,10 +40,18 @@ public class TokenInteraction : MonoBehaviour
 
             if (hit != null && hit.gameObject == gameObject)
             {
+                if (!BattleManager.Instance.SelectedUnits.Contains(unitToken))
+                {
+                    BattleManager.Instance.SelectUnit(unitToken, true);
+                }
+
                 isDragging = true;
                 IsDraggingToken = true;
-                dragOffset = transform.position - worldPos;
-                SetSortingOrderOffset(10);
+
+                foreach (var token in BattleManager.Instance.SelectedUnits)
+                {
+                    token.GetComponent<TokenInteraction>()?.StartGroupDrag(worldPos);
+                }
             }
         }
 
@@ -51,12 +59,20 @@ public class TokenInteraction : MonoBehaviour
         {
             isDragging = false;
             IsDraggingToken = false;
-            SetSortingOrderOffset(-10);
+
+            foreach (var token in BattleManager.Instance.SelectedUnits)
+            {
+                token.GetComponent<TokenInteraction>()?.EndGroupDrag();
+            }
         }
 
         if (isDragging && Mouse.current.leftButton.isPressed)
         {
-            transform.position = worldPos + dragOffset;
+            foreach (var token in BattleManager.Instance.SelectedUnits)
+            {
+                token.GetComponent<TokenInteraction>()?.UpdateGroupDrag(worldPos);
+            }
+
             HandleRotation();
         }
     }
@@ -68,13 +84,14 @@ public class TokenInteraction : MonoBehaviour
         float rotationStep = 45f;
         float scrollY = Mouse.current.scroll.ReadValue().y;
 ;
-        if (scrollY > 0f)
+        if (scrollY != 0f)
         {
-            transform.Rotate(0, 0, rotationStep);
-        }
-        else if (scrollY < 0f)
-        {
-            transform.Rotate(0, 0, -rotationStep);
+            float step = scrollY > 0f ? rotationStep : -rotationStep;
+
+            foreach (var token in BattleManager.Instance.SelectedUnits)
+            {
+                token.transform.Rotate(0, 0, step);
+            }
         }
     }
 
@@ -91,5 +108,21 @@ public class TokenInteraction : MonoBehaviour
         {
             sr.sortingOrder += offset;
         }
+    }
+
+    public void StartGroupDrag(Vector3 mousePos)
+    {
+        dragOffset = transform.position - mousePos;
+        SetSortingOrderOffset(10);
+    }
+
+    public void UpdateGroupDrag(Vector3 mousePos)
+    {
+        transform.position = mousePos + dragOffset;
+    }
+
+    public void EndGroupDrag()
+    {
+        SetSortingOrderOffset(-10);
     }
 }

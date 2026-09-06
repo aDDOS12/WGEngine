@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CombatEngine
 {
-    public void ResolveEngagement(Unit attacker, Unit defender, EngagementType engagement, int distance)
+    public void ResolveEngagement(Unit attacker, Unit defender, EngagementType engagement, float distance)
     {
         int totalDamageToDefender = 0;
         int totalDamageToAttacker = 0;

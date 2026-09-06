@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
+using System.Collections.Specialized;
 
 public class SelectionManager : MonoBehaviour
 {
@@ -19,6 +20,8 @@ public class SelectionManager : MonoBehaviour
     private void Update()
     {
         if (BattleManager.Instance.CurrentPhase != BattlePhase.Deployment) return;
+
+        HandleShortcuts();
 
         if (TokenInteraction.IsDraggingToken) return;
 
@@ -82,14 +85,59 @@ public class SelectionManager : MonoBehaviour
 
         Collider2D[] hits = Physics2D.OverlapAreaAll(min, max);
 
+        BattleManager.Instance.ClearSelection(notify: false);
+
         Debug.Log($"Znaleziono {hits.Length} obiektów w ramce");
 
-        foreach(var hit in hits)
+        var config = DataManager.Instance.CurrentBattleConfig;
+        int allowedSide = 0;
+
+        foreach (var hit in hits)
         {
             UnitToken token = hit.GetComponent<UnitToken>();
             if (token != null)
             {
+                string factionId = token.UnitData.Faction;
+                bool isAttacker = config.AttackingFactionIds.Contains(factionId);
+                bool isDefender = config.DefendingFactionIds.Contains(factionId);
+
+                if (allowedSide == 0)
+                {
+                    if (isAttacker) allowedSide = 1;
+                    else if (isDefender) allowedSide = 2;
+                    else continue;
+                }
+
+                if ((allowedSide == 1 && isAttacker) || (allowedSide == 2 && isDefender))
+                {
+                    BattleManager.Instance.SelectUnit(token, false);
+                }
+
                 Debug.Log($"- Wybrano z ramki: {token.UnitData.UnitName}");
+            }
+        }
+
+        BattleManager.Instance.NotifySelectionChanged();
+    }
+
+    private void HandleShortcuts()
+    {
+        if (Keyboard.current == null) return;
+
+        bool isCtrlPressed = Keyboard.current.ctrlKey.isPressed;
+
+        if (isCtrlPressed)
+        {
+            // Ctrl + N -> Szereg poziomy
+            if (Keyboard.current.nKey.wasPressedThisFrame)
+            {
+                BattleManager.Instance.AlignSelectedToHorizontalRow();
+            }
+
+            // Opcjonalnie dorzucamy Ctrl + M -> Kolumna pionowa
+            if (Keyboard.current.mKey.wasPressedThisFrame)
+            {
+                BattleManager.Instance.AlignSelectedToVerticalColumn();
             }
         }
     }

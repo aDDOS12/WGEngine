@@ -13,8 +13,8 @@ public class Unit : IModifiable
     public int BaseMorale { get; set; }
     public int BaseRangedAttack { get; set; }
     public int BaseRangedDefence { get; set; }
-    public int BaseRange { get; set; }
-    public int Mobility { get; set; }
+    public float BaseRange { get; set; }
+    public float Mobility { get; set; }
     public int Durability { get; set; }
 
     public int TemplateSoldierCount { get; set; }
@@ -33,8 +33,8 @@ public class Unit : IModifiable
     public int RangedAttack => Mathf.Max(0, BaseRangedAttack + ActiveModifiers.Sum(m => m.RangedAttackBonus));
     public int RangedDefence => Mathf.Max(0, BaseRangedDefence + ActiveModifiers.Sum(m => m.RangedDefenceBonus));
     public float Morale => BaseMorale + ActiveModifiers.Sum(m => m.MoraleBonus);
-    public int Range => BaseRange + ActiveModifiers.Sum(m => m.RangeBonus);
-    public int MobilityValue => Mathf.Max(0, Mobility + ActiveModifiers.Sum(m => m.MobilityBonus));
+    public float Range => BaseRange + ActiveModifiers.Sum(m => m.RangeBonus);
+    public float MobilityValue => Mathf.Max(0, Mobility + ActiveModifiers.Sum(m => m.MobilityBonus));
 
     // Calculate full Hp pool of an Unit
     public void InitializeHp()

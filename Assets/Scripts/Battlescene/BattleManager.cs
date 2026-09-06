@@ -1,13 +1,14 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BattleManager : MonoBehaviour
 {
     public static BattleManager Instance { get; private set; }
 
-    public UnitToken HighlightedUnit { get; private set; }
+    public List<UnitToken> SelectedUnits { get; private set; } = new List<UnitToken>();
     public BattlePhase CurrentPhase { get; private set; }
 
     [Header("Referencje Planszy")]
@@ -16,10 +17,24 @@ public class BattleManager : MonoBehaviour
     [Header("Prefaby")]
     public GameObject unitTokenPrefab;
 
+    [Header("Referencje UI")]
+    public Button startCombatButton;
+
+    [Header("Silnik Walki")]
+    public List<CombatOrder> PendingOrders { get; private set; } = new List<CombatOrder>();
+    private CombatEngine combatEngine = new CombatEngine();
+
+    [Header("Ustawienia Animacji")]
+    public float movementDuration = 1.0f;
+
     private List<UnitToken> activeUnitsOnBoard = new List<UnitToken>();
 
     public event Action<UnitToken> OnUnitSelected;
     public event Action OnUnitDeselected;
+    public event Action OnSelectionChanged;
+    public event Action<BattlePhase> OnPhaseChanged;
+    public event Action OnTurnStarted;
+    public event Action OnTurnEnded;
 
     void Awake()
     {
@@ -29,11 +44,18 @@ public class BattleManager : MonoBehaviour
 
     void Start()
     {
+        if (startCombatButton != null)
+        {
+            startCombatButton.onClick.AddListener(() => ChangePhase(BattlePhase.Combat));
+        }
+
         ChangePhase(BattlePhase.Initialization);
     }
 
     public void ChangePhase(BattlePhase newPhase)
     {
+        if (CurrentPhase == newPhase) return; 
+
         CurrentPhase = newPhase;
         Debug.Log($"[BattleManager] Zmiana fazy na {CurrentPhase}");
 
@@ -46,9 +68,12 @@ public class BattleManager : MonoBehaviour
                 PrepareDeployment();
                 break;
             case BattlePhase.Combat:
-                // TODO: Logika walki
+                ClearSelection(true);
+                Debug.Log("Mechaniki Deploymentu zostały zablokowane");
                 break;
         }
+
+        OnPhaseChanged?.Invoke(CurrentPhase);
     }
 
     private void PrepareDeployment()
@@ -80,27 +105,33 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    public void SelectUnit(UnitToken unit)
+    public void SelectUnit(UnitToken unit, bool clearPrevious = true)
     {
-        if (HighlightedUnit == unit)
+        if (clearPrevious)
         {
-            HighlightedUnit.SetSelected(false);
-            HighlightedUnit = null;
-            Debug.Log("[BattleManager] Odznaczono jednostkę.");
-            OnUnitDeselected?.Invoke();
-            return;
+            ClearSelection();
         }
 
-        if (HighlightedUnit != null)
+        if (!SelectedUnits.Contains(unit))
         {
-            HighlightedUnit.SetSelected(false);
+            SelectedUnits.Add(unit);
         }
 
-        HighlightedUnit = unit;
-        HighlightedUnit.SetSelected(true);
+        if (clearPrevious)
+        {
+            NotifySelectionChanged();
+        }
+    }
 
-        Debug.Log($"[BattleManager] Zaznaczono jednostkę: {HighlightedUnit.UnitData.UnitName}");
-        OnUnitSelected?.Invoke(HighlightedUnit);
+    public void ClearSelection(bool notify = true)
+    {
+        SelectedUnits.Clear();
+        if (notify) NotifySelectionChanged();
+    }
+
+    public void NotifySelectionChanged()
+    {
+        OnSelectionChanged?.Invoke();
     }
 
     public void SpawnUnitOnBoard(Unit template, Color factionColor, Vector3 position)
@@ -120,7 +151,7 @@ public class BattleManager : MonoBehaviour
         if (tokenScript != null)
         {
             tokenScript.InitializeUnit(newUnit, newUnit.VisualData, factionColor);
-            tokenScript.SetFacingDirection(Vector2.up);
+            tokenScript.SetTextDirection(Vector2.up);
 
             activeUnitsOnBoard.Add(tokenScript);
 
@@ -128,79 +159,113 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    // Do archiwizacji
-    //private void InitializeBattle()
-    //{
-    //    if (TemplateManager.Instance.UnitTemplates.Count == 0)
-    //    {
-    //        TemplateManager.Instance.LoadTemplates();
-    //    }
+    public void AlignSelectedToHorizontalRow()
+    {
+        if (SelectedUnits.Count < 2) return;
 
-    //    var config = DataManager.Instance.CurrentBattleConfig;
-    //    if (config == null)
-    //    {
-    //        Debug.LogWarning("[BattleManager] Brak konfiguracji bitwy. Ładowanie trybu awaryjnego/testowego.");
-    //        config = new BattleConfiguration("Test_Battle",
-    //            new List<string> { "Imperium Primarii" },
-    //            new List<string> { "Królestwo Jaromaru" });
-    //    }
+        // Bierzemy oś Y od pierwszej zaznaczonej jednostki
+        float targetY = SelectedUnits[0].transform.position.y;
 
-    //    Vector3 attackerSpawnPos = new Vector3(-5f, -3f, 0f); // Dół ekranu
-    //    Vector3 defenderSpawnPos = new Vector3(-5f, 3f, 0f);  // Góra ekranu
-    //    float spacing = 1.5f;
+        foreach (var token in SelectedUnits)
+        {
+            Vector3 newPos = token.transform.position;
+            newPos.y = targetY;
+            token.transform.position = newPos;
+        }
+    }
 
-    //    foreach (var template in TemplateManager.Instance.UnitTemplates.Values)
-    //    {
-    //        bool isAttacker = config.AttackingFactionIds.Contains(template.Faction);
-    //        bool isDefender = config.DefendingFactionIds.Contains(template.Faction);
+    public void AlignSelectedToVerticalColumn()
+    {
+        if (SelectedUnits.Count < 2) return;
 
-    //        if (!isAttacker && !isDefender) continue;
+        // Bierzemy oś X od pierwszej zaznaczonej jednostki
+        float targetX = SelectedUnits[0].transform.position.x;
 
-    //        Vector3 currentSpawnPos = isAttacker ? attackerSpawnPos : defenderSpawnPos;
+        foreach (var token in SelectedUnits)
+        {
+            Vector3 newPos = token.transform.position;
+            newPos.x = targetX;
+            token.transform.position = newPos;
+        }
+    }
 
-    //        DataManager.Instance.SpawnUnitFromTemplate(template.Id);
-    //        Unit combatUnit = DataManager.Instance.ActiveUnits.Last();
+    public void RegisterOrder(CombatOrder order)
+    {
+        // Usuwamy stary rozkaz, jeśli gracz zmienił zdanie co do ruchu tej jednostki
+        PendingOrders.RemoveAll(o => o.SourceUnit == order.SourceUnit);
+        if (order != null) PendingOrders.Add(order);
+    }
 
-    //        Color factionColor = Color.white;
-    //        if (TemplateManager.Instance.FactionTemplates.TryGetValue(combatUnit.Faction, out FactionData factionData))
-    //        {
-    //            if (ColorUtility.TryParseHtmlString(factionData.ColorHexCode, out Color parsedColor))
-    //            {
-    //                factionColor = parsedColor;
-    //            }
-    //        }
+    public void RemoveOrder(UnitToken unit)
+    {
+        PendingOrders.RemoveAll(o => o.SourceUnit == unit);
+    }
 
-    //        GameObject tokenObj = Instantiate(unitTokenPrefab, currentSpawnPos, Quaternion.identity, tokenContainer);
-    //        tokenObj.name = $"Token_{combatUnit.UnitName}";
+    public void ResolveCurrentTurn()
+    {
+        if (CurrentPhase != BattlePhase.Combat) return;
 
-    //        UnitToken tokenScript = tokenObj.GetComponent<UnitToken>();
-    //        if (tokenScript != null)
-    //        {
-    //            tokenScript.InitializeUnit(combatUnit, combatUnit.VisualData, factionColor);
+        Debug.Log($"[BattleManager] Przetwarzanie tury. Ilość rozkazów: {PendingOrders.Count}");
 
-    //            if (tokenScript != null)
-    //            {
-    //                tokenScript.InitializeUnit(combatUnit, combatUnit.VisualData, factionColor);
-    //                Vector2 facingDirection = isAttacker ? Vector2.up : Vector2.down;
-    //                tokenScript.SetFacingDirection(facingDirection);
+        StartCoroutine(ResolveTurnRoutine());
+    }
 
-    //                activeUnitsOnBoard.Add(tokenScript);
-    //            }
-    //        }
+    private IEnumerator ResolveTurnRoutine()
+    {
+        // Zablokowanie interfejsu
+        OnTurnStarted?.Invoke();
 
-    //        if (isAttacker)
-    //        {
-    //            attackerSpawnPos.x += spacing;
-    //        }
-    //        else
-    //        {
-    //            defenderSpawnPos.x += spacing;
-    //        }
-    //    }
+        // Faza 1: Rozpoczęcie ruchu dla wszystkich jednostek z rozkazami
+        foreach (var order in PendingOrders)
+        {
+            Vector2 direction = (order.TargetPosition - order.SourceUnit.transform.position).normalized;
+            if (direction != Vector2.zero) order.SourceUnit.SetTextDirection(direction);
 
-    //    int totalFactions = config.AttackingFactionIds.Count + config.DefendingFactionIds.Count;
-    //    Debug.Log($"[BattleManager] Zespawnowano {activeUnitsOnBoard.Count} jednostek z {totalFactions} frakcji.");
+            // Uruchamiamy korutynę na każdym żetonie
+            order.SourceUnit.StartCoroutine(order.SourceUnit.MoveToPosition(order.TargetPosition, movementDuration));
+        }
 
-    //    ChangePhase(BattlePhase.Deployment);
-    //}
+        // Faza 2: Oczekujemy określoną ilość czasu, aż wszystkie żetony dojadą
+        yield return new WaitForSeconds(movementDuration);
+
+        // Faza 3: Rozstrzygnięcie walki
+        foreach (var order in PendingOrders)
+        {
+            if (order.TargetUnit != null)
+            {
+                EngagementType type = order.IsRangedAttack ? EngagementType.Fire : EngagementType.Melee;
+
+                combatEngine.ResolveEngagement(
+                    order.SourceUnit.UnitData, // Atakujący
+                    order.TargetUnit.UnitData, // Obrońca
+                    type,                      // Typ starcia
+                    order.Distance             // Dystans
+                );
+            }
+        }
+
+        PendingOrders.Clear();
+        ClearSelection(true);
+
+        // TODO: Odświeżenie UI wszystkich jednostek
+        Debug.Log("[BattleManager] Tura zakończona. Obrażenia zostały przeliczone.");
+
+        OnTurnEnded?.Invoke();
+    }
+
+    private void RefreshAllUnitsVisuals()
+    {
+        UnitToken[] allTokens = FindObjectsOfType<UnitToken>();
+
+        foreach (var token in allTokens)
+        {
+            token.UpdateVisual();
+
+            if (token.UnitData.SoldierCount <= 0)
+            {
+                Debug.Log($"[Walka] Oddział {token.UnitData.UnitName} został całkowicie zniszczony.");
+                // TODO: Zamiast niszczyc jednostke mozna w przyszlosci odpalic animacje niszczenia
+            }
+        }
+    }
 }

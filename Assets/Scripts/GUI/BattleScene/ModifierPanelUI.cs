@@ -13,6 +13,7 @@ public class ModifierPanelUI : MonoBehaviour
     public GameObject contentContainer;
 
     [Header("Referencje Statystyk")]
+    public TMP_InputField unitNameText;
     public TMP_InputField inputAttack;
     public TMP_InputField inputDefence;
     public TMP_InputField inputRangedAttack;
@@ -45,8 +46,7 @@ public class ModifierPanelUI : MonoBehaviour
     {
         if (BattleManager.Instance != null)
         {
-            BattleManager.Instance.OnUnitSelected += HandleUnitSelected;
-            BattleManager.Instance.OnUnitDeselected += HandleUnitDeselected;
+            BattleManager.Instance.OnSelectionChanged += HandleSelectionChanged;
         }
         ClearPanel();
     }
@@ -55,8 +55,7 @@ public class ModifierPanelUI : MonoBehaviour
     {
         if (BattleManager.Instance != null)
         {
-            BattleManager.Instance.OnUnitSelected -= HandleUnitSelected;
-            BattleManager.Instance.OnUnitDeselected -= HandleUnitDeselected;
+            BattleManager.Instance.OnSelectionChanged -= HandleSelectionChanged;
         }
     }
 
@@ -93,9 +92,9 @@ public class ModifierPanelUI : MonoBehaviour
             currentUnit.ApplyIncrementalModifier(statName, deltaValue);
             UpdateStatsDisplay(currentUnit);
 
-            if (BattleManager.Instance.HighlightedUnit != null)
+            if (BattleManager.Instance.SelectedUnits.Count == 1)
             {
-                BattleManager.Instance.HighlightedUnit.UpdateVisual();
+                BattleManager.Instance.SelectedUnits[0].UpdateVisual();
             }
         }
 
@@ -115,37 +114,12 @@ public class ModifierPanelUI : MonoBehaviour
             currentUnit.SetDeploymentSoldierCount(exactValue);
             UpdateStatsDisplay(currentUnit);
 
-            if (BattleManager.Instance.HighlightedUnit != null)
+            if (BattleManager.Instance.SelectedUnits.Count == 1)
             {
-                BattleManager.Instance.HighlightedUnit.UpdateVisual();
+                BattleManager.Instance.SelectedUnits[0].UpdateVisual();
             }
             //Debug.Log($"[ModifierPanel] GM ustawił stan żołnierzy: {currentUnit.SoldierCount} dla {currentUnit.UnitName}");
         }
-    }
-
-    private void HandleUnitSelected(UnitToken token)
-    {
-        currentUnit = token.UnitData;
-        var config = DataManager.Instance.CurrentBattleConfig;
-
-        bool belongsToAttacker = config.AttackingFactionIds.Contains(currentUnit.Faction);
-        bool belongsToDefender = config.DefendingFactionIds.Contains(currentUnit.Faction);
-
-        if ((isAttackerPanel && !belongsToAttacker) || (!isAttackerPanel && !belongsToDefender))
-        {
-            ClearPanel();
-            return;
-        }
-
-        contentContainer.SetActive(true);
-        UpdateStatsDisplay(currentUnit);
-        UpdateModifierList();
-    }
-
-    private void HandleUnitDeselected()
-    {
-        currentUnit = null;
-        ClearPanel();
     }
 
     private void ClearPanel()
@@ -158,6 +132,7 @@ public class ModifierPanelUI : MonoBehaviour
 
     public void UpdateStatsDisplay(Unit unit)
     {
+        if (unitNameText != null) unitNameText.text = unit.UnitName;
         if (inputAttack != null) inputAttack.SetTextWithoutNotify(unit.Attack.ToString());
         if (inputDefence != null) inputDefence.SetTextWithoutNotify(unit.Defence.ToString());
         if (inputRangedAttack != null) inputRangedAttack.SetTextWithoutNotify(unit.RangedAttack.ToString());
@@ -231,5 +206,89 @@ public class ModifierPanelUI : MonoBehaviour
         // Odświeżamy statystyki po lewej i kolory przycisków modyfikatorów
         UpdateStatsDisplay(currentUnit);
         UpdateModifierList();
+    }
+
+    private void HandleSelectionChanged()
+    {
+        var selected = BattleManager.Instance.SelectedUnits;
+
+        if (selected.Count == 0)
+        {
+            ClearPanel();
+            return;
+        }
+
+        if (selected.Count > 1)
+        {
+            // Logika dla wielu jednostek
+            contentContainer.SetActive(true);
+            ShowEmptyLockedPanel();
+        }
+        else
+        {
+            // Logika dla jednej jednostki (Twoje obecne UpdateStatsDisplay)
+            currentUnit = selected[0].UnitData;
+
+            // Weryfikacja panelu atakujący/obrońca
+            var config = DataManager.Instance.CurrentBattleConfig;
+            bool isAttacker = config.AttackingFactionIds.Contains(currentUnit.Faction);
+            bool isDefender = config.DefendingFactionIds.Contains(currentUnit.Faction);
+
+            if ((isAttackerPanel && !isAttacker) || (!isAttackerPanel && !isDefender))
+            {
+                ClearPanel();
+                return;
+            }
+
+            contentContainer.SetActive(true);
+            UpdateStatsDisplay(currentUnit);
+            UpdateModifierList();
+            SetInputsInteractable(true); // Otwarcie pól
+        }
+    }
+
+    private void ShowEmptyLockedPanel()
+    {
+        // 1. Czyszczenie listy modyfikatorów
+        foreach (Transform child in modifierListContent)
+        {
+            Destroy(child.gameObject);
+        }
+        if (unitNameText != null) unitNameText.text = "Wiele jednostek";
+
+        inputAttack.SetTextWithoutNotify("-");
+        inputDefence.SetTextWithoutNotify("-");
+        inputRangedAttack.SetTextWithoutNotify("-");
+        inputRangedDefence.SetTextWithoutNotify("-");
+        inputRange.SetTextWithoutNotify("-");
+        inputMorale.SetTextWithoutNotify("-");
+        inputDurability.SetTextWithoutNotify("-");
+        inputMobility.SetTextWithoutNotify("-");
+        inputStartingSoldiers.SetTextWithoutNotify("-");
+        inputCurrentSoldiers.SetTextWithoutNotify("-");
+
+        SetInputsInteractable(false);
+    }
+
+    private void SetInputsInteractable(bool state)
+    {
+        inputAttack.interactable = state;
+        inputDefence.interactable = state;
+        inputRangedAttack.interactable = state;
+        inputRangedDefence.interactable = state;
+        inputRange.interactable = state;
+        inputMorale.interactable = state;
+        inputDurability.interactable = state;
+        inputMobility.interactable = state;
+        inputStartingSoldiers.interactable = state;
+        inputCurrentSoldiers.interactable = state;
+
+        inputAttackDelta.interactable = state;
+        inputDefenceDelta.interactable = state;
+        inputRangedAttackDelta.interactable = state;
+        inputRangedDefenceDelta.interactable = state;
+        inputRangeDelta.interactable = state;
+        inputMoraleDelta.interactable = state;
+        inputMobilityDelta.interactable = state;
     }
 }

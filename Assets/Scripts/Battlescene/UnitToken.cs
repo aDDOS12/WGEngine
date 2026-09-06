@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -30,6 +31,22 @@ public class UnitToken : MonoBehaviour
     public GameObject selectionHighlight;
 
     public Unit UnitData { get; private set; }
+
+    private void OnEnable()
+    {
+        if (BattleManager.Instance != null)
+        {
+            BattleManager.Instance.OnSelectionChanged += HandleSelectionChanged;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (BattleManager.Instance != null)
+        {
+            BattleManager.Instance.OnSelectionChanged -= HandleSelectionChanged;
+        }
+    }
 
     public void InitializeUnit(Unit unitData, UnitVisualData visualData, Color factionColor)
     {
@@ -81,11 +98,10 @@ public class UnitToken : MonoBehaviour
             }
         }
     }
-    private void OnMouseDown()
+
+    private void HandleSelectionChanged()
     {
-        if (UnitData == null) return;
-        Debug.Log($"Kliknięto choragiew: {UnitData.UnitName} (Frakcja: {UnitData.Faction})");
-        BattleManager.Instance.SelectUnit(this);
+        SetSelected(BattleManager.Instance.SelectedUnits.Contains(this));
     }
 
     public void SetSelected(bool isSelected)
@@ -96,7 +112,7 @@ public class UnitToken : MonoBehaviour
         }
     }
 
-    public void SetFacingDirection(Vector2 direction)
+    public void SetTextDirection(Vector2 direction)
     {
         if (direction == Vector2.zero) return;
 
@@ -106,5 +122,20 @@ public class UnitToken : MonoBehaviour
         {
             textContainer.localPosition = -FacingDirection * textOffsetDistance;
         }
+    }
+
+    public IEnumerator MoveToPosition(Vector3 targetPosition, float duration)
+    {
+        Vector3 startPosition = transform.position;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / duration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.position = targetPosition;
     }
 }

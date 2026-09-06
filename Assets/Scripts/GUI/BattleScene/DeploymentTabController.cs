@@ -11,7 +11,23 @@ public class DeploymentTabController : MonoBehaviour
     [Header("Przyciski")]
     public Button btnUnits;
     public Button btnModifiers;
-    
+
+    private void OnEnable()
+    {
+        if (BattleManager.Instance != null)
+        {
+            BattleManager.Instance.OnPhaseChanged += HandlePhaseChanged;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (BattleManager.Instance != null)
+        {
+            BattleManager.Instance.OnPhaseChanged -= HandlePhaseChanged;
+        }
+    }
+
     void Start()
     {
         if (btnUnits != null)
@@ -27,21 +43,38 @@ public class DeploymentTabController : MonoBehaviour
         ShowUnitList();
     }
 
+    private void HandlePhaseChanged(BattlePhase newPhase)
+    {
+        if (newPhase == BattlePhase.Combat)
+        {
+            ShowModifiers();
+
+            if (btnUnits != null)
+            {
+                btnUnits.interactable = false;
+            }
+        }
+        else if (newPhase == BattlePhase.Initialization || newPhase == BattlePhase.Deployment)
+        {
+            if (btnUnits != null) btnUnits.interactable = true;
+        }
+    }
+
     private void ShowModifiers()
     {
-        unitListPanel.SetActive(false);
-        modifierPanel.SetActive(true);
+        if (unitListPanel != null) unitListPanel.SetActive(false);
+        if (modifierPanel != null) modifierPanel.SetActive(true);
 
-        btnUnits.interactable = true;
-        btnModifiers.interactable = false;
+        if (btnUnits != null) btnUnits.interactable = true;
+        if (btnModifiers != null) btnModifiers.interactable = false;
     }
 
     private void ShowUnitList()
     {
-        unitListPanel.SetActive(true);
-        modifierPanel.SetActive(false);
+        if (unitListPanel != null) unitListPanel.SetActive(true);
+        if (modifierPanel != null) modifierPanel.SetActive(false);
 
-        btnUnits.interactable = false;
-        btnModifiers.interactable = true;
+        if (btnUnits != null) btnUnits.interactable = false;
+        if (btnModifiers != null) btnModifiers.interactable = true;
     }
 }

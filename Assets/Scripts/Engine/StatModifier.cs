@@ -10,9 +10,9 @@ public class StatModifier
     public int DefenceBonus { get; set; }
     public int RangedAttackBonus { get; set; }
     public int RangedDefenceBonus { get; set; }
-    public int MobilityBonus { get; set; }
+    public float MobilityBonus { get; set; }
     public float MoraleBonus { get; set; }
-    public int RangeBonus { get; set; }
+    public float RangeBonus { get; set; }
 }
 
 // JSON wrapper
