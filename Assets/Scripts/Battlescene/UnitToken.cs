@@ -94,7 +94,14 @@ public class UnitToken : MonoBehaviour
 
             if (UnitData.IsBroken)
             {
+                textSoldierCount.color = Color.red;
+                if (layerFrame != null) layerFrame.color = new Color(0.3f, 0.3f, 0.3f);
+            }
+            else
+            {
                 textSoldierCount.color = Color.white;
+                // Tutaj przywracamy domyślny kolor ramki, jeśli zaimplementujesz system zbierania się (Rally)
+                if (layerFrame != null) layerFrame.color = Color.white;
             }
         }
     }
@@ -112,16 +119,12 @@ public class UnitToken : MonoBehaviour
         }
     }
 
-    public void SetTextDirection(Vector2 direction)
+    public void SetFacingDirection(Vector2 direction)
     {
         if (direction == Vector2.zero) return;
 
         FacingDirection = direction.normalized;
-
-        if (textContainer != null)
-        {
-            textContainer.localPosition = -FacingDirection * textOffsetDistance;
-        }
+        transform.up = FacingDirection;
     }
 
     public IEnumerator MoveToPosition(Vector3 targetPosition, float duration)

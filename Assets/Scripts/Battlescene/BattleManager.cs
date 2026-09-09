@@ -19,6 +19,7 @@ public class BattleManager : MonoBehaviour
 
     [Header("Referencje UI")]
     public Button startCombatButton;
+    public GameObject startCombatPanel;
 
     [Header("Silnik Walki")]
     public List<CombatOrder> PendingOrders { get; private set; } = new List<CombatOrder>();
@@ -29,8 +30,6 @@ public class BattleManager : MonoBehaviour
 
     private List<UnitToken> activeUnitsOnBoard = new List<UnitToken>();
 
-    public event Action<UnitToken> OnUnitSelected;
-    public event Action OnUnitDeselected;
     public event Action OnSelectionChanged;
     public event Action<BattlePhase> OnPhaseChanged;
     public event Action OnTurnStarted;
@@ -69,6 +68,7 @@ public class BattleManager : MonoBehaviour
                 break;
             case BattlePhase.Combat:
                 ClearSelection(true);
+                if (startCombatPanel != null) startCombatPanel.SetActive(false);
                 Debug.Log("Mechaniki Deploymentu zostały zablokowane");
                 break;
         }
@@ -151,7 +151,7 @@ public class BattleManager : MonoBehaviour
         if (tokenScript != null)
         {
             tokenScript.InitializeUnit(newUnit, newUnit.VisualData, factionColor);
-            tokenScript.SetTextDirection(Vector2.up);
+            tokenScript.SetFacingDirection(Vector2.up);
 
             activeUnitsOnBoard.Add(tokenScript);
 
@@ -215,11 +215,13 @@ public class BattleManager : MonoBehaviour
         // Zablokowanie interfejsu
         OnTurnStarted?.Invoke();
 
+        ProcessRoutingUnits();
+
         // Faza 1: Rozpoczęcie ruchu dla wszystkich jednostek z rozkazami
         foreach (var order in PendingOrders)
         {
             Vector2 direction = (order.TargetPosition - order.SourceUnit.transform.position).normalized;
-            if (direction != Vector2.zero) order.SourceUnit.SetTextDirection(direction);
+            if (direction != Vector2.zero) order.SourceUnit.SetFacingDirection(direction);
 
             // Uruchamiamy korutynę na każdym żetonie
             order.SourceUnit.StartCoroutine(order.SourceUnit.MoveToPosition(order.TargetPosition, movementDuration));
@@ -250,12 +252,13 @@ public class BattleManager : MonoBehaviour
         // TODO: Odświeżenie UI wszystkich jednostek
         Debug.Log("[BattleManager] Tura zakończona. Obrażenia zostały przeliczone.");
 
+        RefreshAllUnitsVisuals();
         OnTurnEnded?.Invoke();
     }
 
     private void RefreshAllUnitsVisuals()
     {
-        UnitToken[] allTokens = FindObjectsOfType<UnitToken>();
+        UnitToken[] allTokens = FindObjectsByType<UnitToken>(FindObjectsInactive.Exclude);
 
         foreach (var token in allTokens)
         {
@@ -265,6 +268,56 @@ public class BattleManager : MonoBehaviour
             {
                 Debug.Log($"[Walka] Oddział {token.UnitData.UnitName} został całkowicie zniszczony.");
                 // TODO: Zamiast niszczyc jednostke mozna w przyszlosci odpalic animacje niszczenia
+            }
+        }
+    }
+
+    private void ProcessRoutingUnits()
+    {
+        UnitToken[] allTokens = FindObjectsByType<UnitToken>(FindObjectsInactive.Exclude);
+
+        foreach (var token in allTokens)
+        {
+            if (token.UnitData.IsBroken)
+            {
+                // Czyścimy głupie pomysły gracza (gdyby jakoś to obszedł)
+                RemoveOrder(token);
+
+                // Bardzo prosty algorytm szukania najbliższego wroga
+                UnitToken nearestEnemy = null;
+                float closestDist = float.MaxValue;
+
+                foreach (var other in allTokens)
+                {
+                    if (other.UnitData.Faction != token.UnitData.Faction)
+                    {
+                        float dist = Vector3.Distance(token.transform.position, other.transform.position);
+                        if (dist < closestDist)
+                        {
+                            closestDist = dist;
+                            nearestEnemy = other;
+                        }
+                    }
+                }
+
+                // Generowanie wektora ucieczki
+                if (nearestEnemy != null)
+                {
+                    Vector3 fleeDirection = (token.transform.position - nearestEnemy.transform.position).normalized;
+                    // Uciekają na pełnej mobilności
+                    Vector3 fleeTarget = token.transform.position + (fleeDirection * token.UnitData.MobilityValue);
+
+                    RegisterOrder(new CombatOrder
+                    {
+                        SourceUnit = token,
+                        TargetUnit = null, // Biegnie w puste pole
+                        TargetPosition = fleeTarget,
+                        IsRangedAttack = false,
+                        Distance = token.UnitData.MobilityValue
+                    });
+
+                    Debug.Log($"[Morale] {token.UnitData.UnitName} rzuca się do ucieczki!");
+                }
             }
         }
     }

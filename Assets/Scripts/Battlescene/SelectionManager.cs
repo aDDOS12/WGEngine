@@ -19,7 +19,7 @@ public class SelectionManager : MonoBehaviour
 
     private void Update()
     {
-        if (BattleManager.Instance.CurrentPhase != BattlePhase.Deployment) return;
+        //if (BattleManager.Instance.CurrentPhase != BattlePhase.Deployment) return;
 
         HandleShortcuts();
 

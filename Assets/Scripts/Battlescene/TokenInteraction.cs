@@ -22,7 +22,7 @@ public class TokenInteraction : MonoBehaviour
 
     private void Update()
     {
-        if (BattleManager.Instance.CurrentPhase != BattlePhase.Deployment) return;
+        //if (BattleManager.Instance.CurrentPhase != BattlePhase.Deployment) return;
 
         HandleMouseInput();
     }
@@ -45,12 +45,15 @@ public class TokenInteraction : MonoBehaviour
                     BattleManager.Instance.SelectUnit(unitToken, true);
                 }
 
-                isDragging = true;
-                IsDraggingToken = true;
-
-                foreach (var token in BattleManager.Instance.SelectedUnits)
+                if (BattleManager.Instance.CurrentPhase == BattlePhase.Deployment)
                 {
-                    token.GetComponent<TokenInteraction>()?.StartGroupDrag(worldPos);
+                    isDragging = true;
+                    IsDraggingToken = true;
+
+                    foreach (var token in BattleManager.Instance.SelectedUnits)
+                    {
+                        token.GetComponent<TokenInteraction>()?.StartGroupDrag(worldPos);
+                    }
                 }
             }
         }
@@ -81,7 +84,7 @@ public class TokenInteraction : MonoBehaviour
     {
         if (Mouse.current == null) return;
 
-        float rotationStep = 45f;
+        float rotationStep = 5f;
         float scrollY = Mouse.current.scroll.ReadValue().y;
 ;
         if (scrollY != 0f)

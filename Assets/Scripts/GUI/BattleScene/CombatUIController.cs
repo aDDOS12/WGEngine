@@ -13,7 +13,10 @@ public class CombatUIController : MonoBehaviour
         {
             nextTurnButton.onClick.AddListener(OnNextTurnClicked);
         }
+    }
 
+    private void Start()
+    {
         // Subskrypcja zdarzeń blokujących UI (zapobiega spamowaniu przycisku)
         if (BattleManager.Instance != null)
         {

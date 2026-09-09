@@ -1130,7 +1130,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 351037110}
   m_Direction: 0
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1940,8 +1940,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 256085545}
   m_HandleRect: {fileID: 256085544}
   m_Direction: 0
-  m_Value: 1
-  m_Size: 1
+  m_Value: 0
+  m_Size: 0.99999976
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -10067,6 +10067,7 @@ GameObject:
   - component: {fileID: 690408473}
   - component: {fileID: 690408475}
   - component: {fileID: 690408474}
+  - component: {fileID: 690408476}
   m_Layer: 0
   m_Name: BattleManager
   m_TagString: Untagged
@@ -10120,6 +10121,8 @@ MonoBehaviour:
   tokenContainer: {fileID: 330209308}
   unitTokenPrefab: {fileID: 7965138709201689798, guid: a877f5738f64de241b7f78abe71d9143, type: 3}
   startCombatButton: {fileID: 1405776026}
+  startCombatPanel: {fileID: 2014997992}
+  movementDuration: 1
 --- !u!114 &690408473
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10147,9 +10150,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RangeVisualizer
   moveColor: {r: 0, g: 1, b: 0, a: 0.3}
   rangeColor: {r: 1, g: 0, b: 0, a: 0.3}
-  circleMaterial: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  circleMaterial: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   segments: 50
-  lineWidth: 0.05
+  lineWidth: 0.1
 --- !u!114 &690408475
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10165,7 +10168,20 @@ MonoBehaviour:
   moveColor: {r: 0, g: 1, b: 0, a: 1}
   attackColor: {r: 1, g: 0, b: 0, a: 1}
   invalidColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  lineMaterial: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  lineMaterial: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+--- !u!114 &690408476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 690408469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25ff2593e36117440aab34f4603c053e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatUIController
+  nextTurnButton: {fileID: 1571398533}
 --- !u!1 &705121183
 GameObject:
   m_ObjectHideFlags: 0
@@ -22303,7 +22319,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 874173407}
   m_HandleRect: {fileID: 874173406}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
