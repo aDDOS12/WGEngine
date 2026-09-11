@@ -9,6 +9,7 @@ public class DataManager
     public static DataManager Instance => _instance ??= new DataManager();
     public List<Unit> ActiveUnits { get; private set; } = new List<Unit>();
     public BattleConfiguration CurrentBattleConfig { get; set; }
+    public string PendingSaveFileToLoad { get; set; } = string.Empty;
 
     private DataManager()
     {
@@ -69,5 +70,10 @@ public class DataManager
         {
             Debug.LogWarning($"[DataManager] Did not found modifier template with ID: {modifierTemplateId}");
         }
+    }
+
+    public void DeleteSaveFile(string fileName)
+    {
+        SaveSystem.DeleteSave(fileName);
     }
 }

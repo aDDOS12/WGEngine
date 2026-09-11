@@ -7,6 +7,7 @@ public class MainMenuController : MonoBehaviour
     public GameObject factionEditorPanel;
     public GameObject modifierEditorPanel;
     public GameObject optionsPanel;
+    public GameObject loadBattlePanel;
 
     private void Start()
     {
@@ -20,11 +21,13 @@ public class MainMenuController : MonoBehaviour
         if (factionEditorPanel != null) factionEditorPanel.SetActive(false);
         if (modifierEditorPanel != null) modifierEditorPanel.SetActive(false);
         if (optionsPanel != null) optionsPanel.SetActive(false);
+        if (loadBattlePanel != null) loadBattlePanel.SetActive(false);
     }
     // Method for "New Battle" button
     public void OnNewBattleClicked()
     {
         //Debug.Log("Ładowanie pustej planszy bitwy...");
+        DataManager.Instance.PendingSaveFileToLoad = string.Empty;
         SceneManager.LoadScene("BattleScene");
     }
 
@@ -54,5 +57,11 @@ public class MainMenuController : MonoBehaviour
     {
         Debug.Log("Zamykanie aplikacji...");
         Application.Quit();
+    }
+
+    public void OnLoadBattleClicker()
+    {
+        mainMenuPanel.SetActive(false);
+        loadBattlePanel.SetActive(true);
     }
 }

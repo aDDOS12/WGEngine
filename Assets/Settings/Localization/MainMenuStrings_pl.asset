@@ -70,6 +70,10 @@ MonoBehaviour:
     m_Localized: "Powr\xF3t do Menu"
     m_Metadata:
       m_Items: []
+  - m_Id: 11271297747566592
+    m_Localized: Wczytaj Bitwe
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

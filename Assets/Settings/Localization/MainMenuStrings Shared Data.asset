@@ -16,7 +16,7 @@ MonoBehaviour:
   m_TableCollectionNameGuidString: 6f9904ab3b67a0a449ca682b5c4d15d3
   m_Entries:
   - m_Id: 23931043840
-    m_Key: btn_new_battle
+    m_Key: btn_load_battl
     m_Metadata:
       m_Items: []
   - m_Id: 128776060928
@@ -65,6 +65,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 335784412889088
     m_Key: btn_options_return
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11271297747566592
+    m_Key: btn_load_battle
     m_Metadata:
       m_Items: []
   m_Metadata:

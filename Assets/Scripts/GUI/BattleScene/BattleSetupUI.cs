@@ -23,6 +23,17 @@ public class BattleSetupUI : MonoBehaviour
 
     void Start()
     {
+        if (!string.IsNullOrEmpty(DataManager.Instance.PendingSaveFileToLoad))
+        {
+            if (battleStartPanel != null) battleStartPanel.SetActive(false);
+            if (battleInterface != null) battleInterface.SetActive(true);
+
+            BattleManager.Instance.LoadBattleFromSave(DataManager.Instance.PendingSaveFileToLoad);
+
+            DataManager.Instance.PendingSaveFileToLoad = string.Empty;
+            return;
+        }
+
         if (battleStartPanel != null) battleStartPanel.SetActive(true);
         if (battleInterface != null) battleInterface.SetActive(false);
 

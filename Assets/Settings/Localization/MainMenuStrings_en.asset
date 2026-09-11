@@ -70,6 +70,10 @@ MonoBehaviour:
     m_Localized: Return to Menu
     m_Metadata:
       m_Items: []
+  - m_Id: 11271297747566592
+    m_Localized: Load Battle
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

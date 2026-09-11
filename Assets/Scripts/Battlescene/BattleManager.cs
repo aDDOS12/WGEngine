@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class BattleManager : MonoBehaviour
@@ -28,6 +30,11 @@ public class BattleManager : MonoBehaviour
     [Header("Ustawienia Animacji")]
     public float movementDuration = 1.0f;
 
+    [Header("Historia Bitwy")]
+    public int CurrentTurn { get; private set; } = 1;
+    public List<TurnLog> BattleHistory { get; private set; } = new List<TurnLog>();
+    private List<string> _currentTurnLogs = new List<string>();
+
     private List<UnitToken> activeUnitsOnBoard = new List<UnitToken>();
 
     public event Action OnSelectionChanged;
@@ -51,6 +58,24 @@ public class BattleManager : MonoBehaviour
         ChangePhase(BattlePhase.Initialization);
     }
 
+    void Update()
+    {
+#if UNITY_EDITOR
+        if (Keyboard.current.f9Key.wasPressedThisFrame)
+        {
+            LoadBattleFromSave("autosave.json");
+        }
+#endif
+
+        if (CurrentPhase == BattlePhase.Deployment)
+        {
+            if (Keyboard.current.xKey.wasPressedThisFrame && Keyboard.current.shiftKey.isPressed)
+            {
+                RemoveSelectedUnits();
+            }
+        }
+    }
+
     public void ChangePhase(BattlePhase newPhase)
     {
         if (CurrentPhase == newPhase) return; 
@@ -70,6 +95,7 @@ public class BattleManager : MonoBehaviour
                 ClearSelection(true);
                 if (startCombatPanel != null) startCombatPanel.SetActive(false);
                 Debug.Log("Mechaniki Deploymentu zostały zablokowane");
+                SaveCurrentBattle(true);
                 break;
         }
 
@@ -121,6 +147,31 @@ public class BattleManager : MonoBehaviour
         {
             NotifySelectionChanged();
         }
+    }
+
+    private void RemoveSelectedUnits()
+    {
+        if (SelectedUnits.Count == 0) return;
+
+        foreach (var token in SelectedUnits)
+        {
+            // 1. Usuwamy z lokalnej listy planszy
+            activeUnitsOnBoard.Remove(token);
+
+            // 2. Usuwamy z globalnego rejestru DataManagera, by uniknąć NullReferenceException
+            if (DataManager.Instance != null && DataManager.Instance.ActiveUnits.Contains(token.UnitData))
+            {
+                DataManager.Instance.ActiveUnits.Remove(token.UnitData);
+            }
+
+            // 3. Fizycznie niszczymy obiekt na scenie
+            Destroy(token.gameObject);
+        }
+
+        // 4. Czyścimy selekcję i wysyłamy sygnał do odświeżenia UI (np. wyczyszczenia panelu statystyk)
+        ClearSelection(true);
+
+        Debug.Log("[BattleManager] Zaznaczone jednostki zostały usunięte z planszy.");
     }
 
     public void ClearSelection(bool notify = true)
@@ -253,6 +304,12 @@ public class BattleManager : MonoBehaviour
         Debug.Log("[BattleManager] Tura zakończona. Obrażenia zostały przeliczone.");
 
         RefreshAllUnitsVisuals();
+
+        BattleHistory.Add(new TurnLog { TurnNumber = this.CurrentTurn, CombatEvents = new List<string>(_currentTurnLogs) });
+        _currentTurnLogs.Clear();
+        CurrentTurn++; // Zwiększamy numer tury
+
+        SaveCurrentBattle(true);
         OnTurnEnded?.Invoke();
     }
 
@@ -320,5 +377,198 @@ public class BattleManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void SaveCurrentBattle(bool isAutosave = false)
+    {
+        BattleSaveData saveData = new BattleSaveData();
+        saveData.CurrentTurn = this.CurrentTurn;
+        saveData.HistoryLogs = new List<TurnLog>(this.BattleHistory);
+
+        UnitToken[] allTokens = FindObjectsByType<UnitToken>(FindObjectsInactive.Exclude);
+
+        foreach (var token in allTokens)
+        {
+            UnitSaveData uData = new UnitSaveData
+            {
+                UnitName = token.UnitData.UnitName,
+                FactionID = token.UnitData.Faction,
+                Position = token.transform.position,
+                FacingDirection = token.FacingDirection,
+                CurrentSoldierCount = token.UnitData.SoldierCount,
+                IsBroken = token.UnitData.IsBroken,
+                StartingSoldierCount = token.UnitData.StartingSoldierCount
+            };
+            saveData.Units.Add(uData);
+        }
+        var config = DataManager.Instance.CurrentBattleConfig;
+        if (config != null)
+        {
+            saveData.BattleId = config.BattleId;
+            saveData.AttackingFactions = config.AttackingFactionIds;
+            saveData.DefendingFactions = config.DefendingFactionIds;
+        }
+
+        // Pobranie nazwy z konfiguracji (zabezpieczone w razie braku configu)
+        string battleName = DataManager.Instance.CurrentBattleConfig?.BattleId ?? "NieznanaBitwa";
+        // Decyzja o nazwie pliku
+        string fileName = isAutosave ? "autosave.json" : $"{battleName}.json";
+
+        SaveSystem.SaveGame(fileName, saveData);
+    }
+
+    public void LoadBattleFromSave(string fileName = "autosave.json")
+    {
+        BattleSaveData saveData = SaveSystem.LoadGame(fileName);
+
+        if (saveData == null)
+        {
+            Debug.LogError($"[BattleManager] Błąd wczytywania. Plik {fileName} nie istnieje lub jest uszkodzony.");
+            return;
+        }
+
+        // ODTWORZENIE KONFIGURACJI BITWY DLA DATA MANAGERA
+        DataManager.Instance.CurrentBattleConfig = new BattleConfiguration(
+            string.IsNullOrEmpty(saveData.BattleId) ? "WczytanaBitwa" : saveData.BattleId,
+            saveData.AttackingFactions ?? new List<string>(),
+            saveData.DefendingFactions ?? new List<string>()
+        );
+        this.CurrentTurn = saveData.CurrentTurn;
+        this.BattleHistory = saveData.HistoryLogs ?? new List<TurnLog>();
+        this._currentTurnLogs.Clear();
+
+        // 1. Zabezpieczenie przed wyciekami pamięci i błędami referencji
+        ClearBattlefield();
+
+        // 2. Odtworzenie metadanych gry
+        // Jeśli masz zmienną śledzącą tury (np. CurrentTurn), nadpisz ją tutaj:
+        // CurrentTurn = saveData.CurrentTurn; 
+
+        // 3. Rekonstrukcja jednostek na scenie
+        foreach (var unitData in saveData.Units)
+        {
+            ReconstructUnitToken(unitData);
+        }
+
+        // 4. Reset stanu UI i zmuszenie gry do odświeżenia widoków
+        CurrentPhase = BattlePhase.Combat; // lub odpowiednia faza startowa
+        OnTurnEnded?.Invoke(); // Wywołujemy event, żeby UI załapało nowy stan
+
+        Debug.Log($"[BattleManager] Bitwa wczytana pomyślnie. Zrekonstruowano {saveData.Units.Count} jednostek.");
+    }
+
+    private void ClearBattlefield()
+    {
+        SelectedUnits.Clear();
+        PendingOrders.Clear();
+        DataManager.Instance.ActiveUnits.Clear();
+
+        UnitToken[] existingTokens = FindObjectsByType<UnitToken>(FindObjectsInactive.Exclude);
+        for (int i = 0; i < existingTokens.Length; i++)
+        {
+            Destroy(existingTokens[i].gameObject);
+        }
+    }
+
+    private void ReconstructUnitToken(UnitSaveData uData)
+    {
+        // 1. Znalezienie oryginalnego szablonu po nazwie
+        Unit baseTemplate = null;
+        foreach(var template in TemplateManager.Instance.UnitTemplates.Values)
+        {
+            if (template.UnitName == uData.UnitName)
+            {
+                baseTemplate = template;
+                break;
+            }
+        }
+
+        if (baseTemplate == null)
+        {
+            Debug.LogError($"[BattleManager] Nie znaleziono bazowego szablonu dla: {uData.UnitName}");
+            return;
+        }
+
+        // 2. Klonowanie jednostki przy użyciu Twojej metody
+        Unit runtimeUnit = baseTemplate.CloneUnit();
+        runtimeUnit.StartingSoldierCount = uData.StartingSoldierCount;
+        DataManager.Instance.ActiveUnits.Add(runtimeUnit);
+
+        // 3. Wstrzykiwanie stanu z zapisu
+        runtimeUnit.SoldierCount = uData.CurrentSoldierCount;
+        runtimeUnit.Faction = uData.FactionID;
+        runtimeUnit.IsBroken = uData.IsBroken;
+
+        // Zabezpieczenie na wypadek, gdyby ktoś wczytał zniszczoną jednostkę
+        if (runtimeUnit.SoldierCount < 0) runtimeUnit.SoldierCount = 0;
+
+        // 4. Instancjonowanie żetonu (od razu do odpowiedniego kontenera!)
+        GameObject tokenObj = Instantiate(unitTokenPrefab, uData.Position, Quaternion.identity, tokenContainer);
+        tokenObj.name = $"Token_{runtimeUnit.UnitName}";
+        UnitToken tokenScript = tokenObj.GetComponent<UnitToken>();
+
+        // 5. Pobieranie koloru frakcji na podstawie Hex Code
+        Color factionColor = Color.white; // domyślny kolor
+
+        if (TemplateManager.Instance.FactionTemplates.TryGetValue(runtimeUnit.Faction, out FactionData factionData))
+        {
+            if (ColorUtility.TryParseHtmlString(factionData.ColorHexCode, out Color parsedColor))
+            {
+                factionColor = parsedColor;
+            }
+        }
+
+        // 6. Inicjalizacja. (VisualData masz od razu w obiekcie Unit!)
+        tokenScript.InitializeUnit(runtimeUnit, runtimeUnit.VisualData, factionColor);
+        tokenScript.SetFacingDirection(uData.FacingDirection);
+        tokenScript.UpdateVisual();
+    }
+
+    public void LogCombatEvent(string message)
+    {
+        // Dodajemy prosty znacznik czasu, bardzo przydatne w raportach
+        _currentTurnLogs.Add($"[{System.DateTime.Now:HH:mm:ss}] {message}");
+    }
+
+    public void EndBattleAndGenerateReport()
+    {
+        // 1. Zbieramy dokładnie taki sam obiekt jak przy zapisywaniu JSON
+        BattleSaveData finalData = new BattleSaveData();
+
+        finalData.CurrentTurn = this.CurrentTurn;
+        finalData.HistoryLogs = new List<TurnLog>(this.BattleHistory);
+
+        var config = DataManager.Instance.CurrentBattleConfig;
+        if (config != null)
+        {
+            finalData.BattleId = config.BattleId;
+            finalData.AttackingFactions = config.AttackingFactionIds;
+            finalData.DefendingFactions = config.DefendingFactionIds;
+        }
+
+        UnitToken[] allTokens = FindObjectsByType<UnitToken>(FindObjectsInactive.Exclude);
+        foreach (var token in allTokens)
+        {
+            UnitSaveData uData = new UnitSaveData
+            {
+                UnitName = token.UnitData.UnitName,
+                FactionID = token.UnitData.Faction,
+                StartingSoldierCount = token.UnitData.StartingSoldierCount,
+                CurrentSoldierCount = token.UnitData.SoldierCount,
+                IsBroken = token.UnitData.IsBroken
+                // Pozycje nas tutaj nie obchodzą, bo to tylko do raportu
+            };
+            finalData.Units.Add(uData);
+        }
+
+        // 2. Przekazujemy zebrane dane do naszego generatora
+        BattleReportGenerator.GenerateReport(finalData);
+
+        // 3. Po zrobieniu raportu z bitwy, autozapis jest już niepotrzebny/przestarzały
+        DataManager.Instance.DeleteSaveFile("autosave.json");
+
+        Debug.Log("[BattleManager] Zakończono bitwę i wygenerowano logi.");
+
+        SceneManager.LoadScene("MenuScene");
     }
 }
