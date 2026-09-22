@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class UnitVisualData
 {
     public string UnitId { get; set; }

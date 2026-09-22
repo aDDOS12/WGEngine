@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public interface IModifiable
 {
     void AddModifier(StatModifier modifier);

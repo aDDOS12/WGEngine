@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class FactionData
 {
     public string Id { get; set; }

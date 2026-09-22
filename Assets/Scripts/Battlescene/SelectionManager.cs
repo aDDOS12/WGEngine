@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
-using System.Collections.Specialized;
 
 public class SelectionManager : MonoBehaviour
 {
