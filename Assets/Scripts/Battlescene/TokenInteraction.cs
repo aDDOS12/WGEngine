@@ -85,14 +85,13 @@ public class TokenInteraction : MonoBehaviour
 
         float rotationStep = 5f;
         float scrollY = Mouse.current.scroll.ReadValue().y;
-;
         if (scrollY != 0f)
         {
             float step = scrollY > 0f ? rotationStep : -rotationStep;
 
             foreach (var token in BattleManager.Instance.SelectedUnits)
             {
-                token.transform.Rotate(0, 0, step);
+                token.RotateFacing(step);
             }
         }
     }

@@ -126,6 +126,13 @@ public class UnitToken : MonoBehaviour
         transform.up = FacingDirection;
     }
 
+    public void RotateFacing(float degrees)
+    {
+        // Rotate the stored direction, SetFacingDirection applies it to the transform
+        Vector2 rotated = Quaternion.Euler(0f, 0f, degrees) * FacingDirection;
+        SetFacingDirection(rotated);
+    }
+
     public IEnumerator MoveToPosition(Vector3 targetPosition, float duration)
     {
         Vector3 startPosition = transform.position;
