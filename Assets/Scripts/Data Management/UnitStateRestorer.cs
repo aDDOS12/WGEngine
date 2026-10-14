@@ -23,6 +23,9 @@ public class UnitStateRestorer
         unit.Faction = save.FactionID;
         unit.StartingSoldierCount = save.StartingSoldierCount;
         unit.SoldierCount = Mathf.Max(0, save.CurrentSoldierCount);
+        // HP is not stored in the save. Rebuild it from the soldier count
+        // (decision in #28: accepts losing damage below one soldier).
+        unit.InitializeHp();
         unit.IsBroken = save.IsBroken;
 
         return unit;

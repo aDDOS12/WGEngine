@@ -78,4 +78,56 @@ public class UnitStateRestorerTests
         Assert.IsNull(unit);
         Assert.AreEqual(TemplateMatch.None, match);
     }
+
+    [Test]
+    public void Restore_DamagedUnit_SetsHpFromSoldierCount()
+    {
+        // arrange
+        var save = new UnitSaveData
+        {
+            TemplateId = "id-a",
+            UnitName = "Kusznicy",
+            FactionID = "A",
+            StartingSoldierCount = 100,
+            CurrentSoldierCount = 80
+        };
+
+        // act
+        Unit unit = UnitStateRestorer.Restore(save, templates, out _);
+
+        // assert
+        // 80 soldiers x 10 durability
+        Assert.AreEqual(800, unit.CurrentHp);
+    }
+
+    [Test]
+    public void Restore_DamagedUnit_LosesSoldiersInsteadOfHealing()
+    {
+        // arrange
+        // Field report: unit at 80/100 took 100 damage and ended at 90/100
+        var save = new UnitSaveData
+        {
+            TemplateId = "id-a",
+            UnitName = "Kusznicy",
+            FactionID = "A",
+            StartingSoldierCount = 100,
+            CurrentSoldierCount = 80
+        };
+        Unit defender = UnitStateRestorer.Restore(save, templates, out _);
+
+        var attacker = new Unit
+        {
+            BaseRangedAttack = 100,
+            BaseRange = 50,
+            Durability = 10,
+            SoldierCount = 100
+        };
+        attacker.InitializeHp();
+
+        // act
+        new CombatEngine().ResolveEngagement(attacker, defender, EngagementType.Fire, 10f);
+
+        // assert
+        Assert.AreEqual(70, defender.SoldierCount);
+    }
 }
