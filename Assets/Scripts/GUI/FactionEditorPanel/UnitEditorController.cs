@@ -243,6 +243,10 @@ public class UnitEditorController : MonoBehaviour
         else
         {
             Debug.Log($"Utworzono nową chorągiew: {inputUnitName.text}");
+
+            // The new unit now exists in the database.
+            // Next saves must overwrite it instead of creating a copy.
+            isEditingMode = true;
         }
 
         factionListController.RefreshUnitList();
