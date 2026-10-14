@@ -130,4 +130,49 @@ public class UnitStateRestorerTests
         // assert
         Assert.AreEqual(70, defender.SoldierCount);
     }
+
+    [Test]
+    public void Restore_TemplateModifier_UsesCurrentTemplateValues()
+    {
+        // arrange
+        var modifierTemplates = new Dictionary<string, StatModifier>
+        {
+            ["testudo"] = new StatModifier { Id = "testudo", AttackBonus = 15 }
+        };
+        var save = new UnitSaveData
+        {
+            TemplateId = "id-a",
+            UnitName = "Kusznicy",
+            FactionID = "A",
+            CurrentSoldierCount = 100,
+            Modifiers = { new ModifierSaveData { Id = "testudo", AttackBonus = 10 } }
+        };
+
+        // act
+        Unit unit = UnitStateRestorer.Restore(save, templates, out _, modifierTemplates);
+
+        // assert
+        // Template was changed from +10 to +15 after the save
+        Assert.AreEqual(15, unit.Attack);
+    }
+
+    [Test]
+    public void Restore_ManualModifier_UsesSavedValues()
+    {
+        // arrange
+        var save = new UnitSaveData
+        {
+            TemplateId = "id-a",
+            UnitName = "Kusznicy",
+            FactionID = "A",
+            CurrentSoldierCount = 100,
+            Modifiers = { new ModifierSaveData { Id = "ManualOverride_RangedAttack", RangedAttackBonus = 40 } }
+        };
+
+        // act
+        Unit unit = UnitStateRestorer.Restore(save, templates, out _, new Dictionary<string, StatModifier>());
+
+        // assert
+        Assert.AreEqual(40, unit.RangedAttack);
+    }
 }

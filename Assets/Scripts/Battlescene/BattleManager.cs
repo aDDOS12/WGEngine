@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -398,7 +399,8 @@ public class BattleManager : MonoBehaviour
                 FacingDirection = token.FacingDirection,
                 CurrentSoldierCount = token.UnitData.SoldierCount,
                 IsBroken = token.UnitData.IsBroken,
-                StartingSoldierCount = token.UnitData.StartingSoldierCount
+                StartingSoldierCount = token.UnitData.StartingSoldierCount,
+                Modifiers = token.UnitData.ActiveModifiers.Select(ModifierSaveData.FromModifier).ToList()
             };
             saveData.Units.Add(uData);
         }
@@ -475,7 +477,8 @@ public class BattleManager : MonoBehaviour
     {
         // 1. Rebuild the unit from the save (template + saved state)
         Unit runtimeUnit = UnitStateRestorer.Restore(
-            uData, TemplateManager.Instance.UnitTemplates, out TemplateMatch match);
+            uData, TemplateManager.Instance.UnitTemplates, out TemplateMatch match,
+            TemplateManager.Instance.ModifierTemplates);
 
         if (runtimeUnit == null)
         {
