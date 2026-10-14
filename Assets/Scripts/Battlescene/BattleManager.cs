@@ -473,15 +473,11 @@ public class BattleManager : MonoBehaviour
 
     private void ReconstructUnitToken(UnitSaveData uData)
     {
-        // 1. Find the template: Id -> name + faction -> name only
-        Unit baseTemplate = TemplateFinder.Find(
-            TemplateManager.Instance.UnitTemplates,
-            uData.TemplateId,
-            uData.UnitName,
-            uData.FactionID,
-            out TemplateMatch match);
+        // 1. Rebuild the unit from the save (template + saved state)
+        Unit runtimeUnit = UnitStateRestorer.Restore(
+            uData, TemplateManager.Instance.UnitTemplates, out TemplateMatch match);
 
-        if (baseTemplate == null)
+        if (runtimeUnit == null)
         {
             Debug.LogError($"[BattleManager] Template not found for: {uData.UnitName}");
             return;
@@ -493,18 +489,7 @@ public class BattleManager : MonoBehaviour
                              "matched by name only. Stats may come from another faction.");
         }
 
-        // 2. Klonowanie jednostki przy użyciu Twojej metody
-        Unit runtimeUnit = baseTemplate.CloneUnit();
-        runtimeUnit.StartingSoldierCount = uData.StartingSoldierCount;
         DataManager.Instance.ActiveUnits.Add(runtimeUnit);
-
-        // 3. Wstrzykiwanie stanu z zapisu
-        runtimeUnit.SoldierCount = uData.CurrentSoldierCount;
-        runtimeUnit.Faction = uData.FactionID;
-        runtimeUnit.IsBroken = uData.IsBroken;
-
-        // Zabezpieczenie na wypadek, gdyby ktoś wczytał zniszczoną jednostkę
-        if (runtimeUnit.SoldierCount < 0) runtimeUnit.SoldierCount = 0;
 
         // 4. Instancjonowanie żetonu (od razu do odpowiedniego kontenera!)
         GameObject tokenObj = Instantiate(unitTokenPrefab, uData.Position, Quaternion.identity, tokenContainer);
