@@ -22,6 +22,7 @@ public class BattleSaveData
 public class UnitSaveData
 {
     // Identyfikacja
+    public string TemplateId;
     public string UnitName;
     public string FactionID;
 

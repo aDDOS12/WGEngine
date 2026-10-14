@@ -6,6 +6,7 @@ using UnityEngine;
 public class Unit : IModifiable
 {
     public string Id { get; set; }
+    public string TemplateId { get; set; }
     public string Faction { get; set; }
     public string UnitName { get; set; }
     public int BaseAttack { get; set; }
@@ -121,6 +122,7 @@ public class Unit : IModifiable
         var clone = new Unit
         {
             Id = Guid.NewGuid().ToString(),
+            TemplateId = this.TemplateId ?? this.Id,
             Faction = this.Faction,
             UnitName = this.UnitName,
             BaseAttack = this.BaseAttack,

@@ -391,6 +391,7 @@ public class BattleManager : MonoBehaviour
         {
             UnitSaveData uData = new UnitSaveData
             {
+                TemplateId = token.UnitData.TemplateId,
                 UnitName = token.UnitData.UnitName,
                 FactionID = token.UnitData.Faction,
                 Position = token.transform.position,
@@ -472,21 +473,24 @@ public class BattleManager : MonoBehaviour
 
     private void ReconstructUnitToken(UnitSaveData uData)
     {
-        // 1. Znalezienie oryginalnego szablonu po nazwie
-        Unit baseTemplate = null;
-        foreach(var template in TemplateManager.Instance.UnitTemplates.Values)
-        {
-            if (template.UnitName == uData.UnitName)
-            {
-                baseTemplate = template;
-                break;
-            }
-        }
+        // 1. Find the template: Id -> name + faction -> name only
+        Unit baseTemplate = TemplateFinder.Find(
+            TemplateManager.Instance.UnitTemplates,
+            uData.TemplateId,
+            uData.UnitName,
+            uData.FactionID,
+            out TemplateMatch match);
 
         if (baseTemplate == null)
         {
-            Debug.LogError($"[BattleManager] Nie znaleziono bazowego szablonu dla: {uData.UnitName}");
+            Debug.LogError($"[BattleManager] Template not found for: {uData.UnitName}");
             return;
+        }
+
+        if (match == TemplateMatch.ByNameOnly)
+        {
+            Debug.LogWarning($"[BattleManager] Template for {uData.UnitName} ({uData.FactionID}) " +
+                             "matched by name only. Stats may come from another faction.");
         }
 
         // 2. Klonowanie jednostki przy użyciu Twojej metody
