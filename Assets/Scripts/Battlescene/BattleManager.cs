@@ -454,8 +454,10 @@ public class BattleManager : MonoBehaviour
         }
 
         // 4. Reset stanu UI i zmuszenie gry do odświeżenia widoków
-        CurrentPhase = BattlePhase.Combat; // lub odpowiednia faza startowa
-        OnTurnEnded?.Invoke(); // Wywołujemy event, żeby UI załapało nowy stan
+        // Go through ChangePhase so the start panel hides
+        // and phase listeners (e.g. DeploymentTabController) update
+        ChangePhase(BattlePhase.Combat);
+        OnTurnEnded?.Invoke();
 
         Debug.Log($"[BattleManager] Bitwa wczytana pomyślnie. Zrekonstruowano {saveData.Units.Count} jednostek.");
     }
