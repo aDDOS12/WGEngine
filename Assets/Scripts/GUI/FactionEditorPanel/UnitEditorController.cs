@@ -219,6 +219,8 @@ public class UnitEditorController : MonoBehaviour
         UnitVisualData newVisualData = badgeVisualController.GetVisualData(currentEditedUnit.Id);
         // Add/overrite Dictionary in TemplateManager
         TemplateManager.Instance.VisualTemplates[currentEditedUnit.Id] = newVisualData;
+        // Keep the unit's own copy in sync, CloneUnit reads from it.
+        currentEditedUnit.VisualData = newVisualData;
 
         // Update faction color (if Unit has defined faction)
         if (!string.IsNullOrEmpty(currentEditedUnit.Faction) && currentEditedUnit.Faction != "Brak Frakcji")
