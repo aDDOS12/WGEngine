@@ -1130,7 +1130,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 351037110}
   m_Direction: 0
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1467,7 +1467,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 383204199}
   m_HandleRect: {fileID: 383204198}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -27635,6 +27635,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 11acfa655d2420f46b49881a73e6e2d0, type: 3}
   - {fileID: 21300000, guid: 256fd7ac16bb71040bf96d9e6157c480, type: 3}
   - {fileID: 21300000, guid: 2386434b0216ef54aa64fd4af8f9e139, type: 3}
+  - {fileID: 21300000, guid: 7bb9ade61f42ce74cbf808d43dcd1dfe, type: 3}
   - {fileID: 21300000, guid: a65b48b1f09b06846b73408833254249, type: 3}
   - {fileID: 21300000, guid: efb96d134e79620498817086a3ab889f, type: 3}
   textureWidth: 400

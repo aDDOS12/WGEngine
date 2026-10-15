@@ -7307,6 +7307,9 @@ MonoBehaviour:
     - m_Text: Taran
       m_Image: {fileID: 0}
       m_Color: {r: 1, g: 1, b: 1, a: 1}
+    - m_Text: "Top\xF3r"
+      m_Image: {fileID: 0}
+      m_Color: {r: 1, g: 1, b: 1, a: 1}
     - m_Text: Trebusz
       m_Image: {fileID: 0}
       m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -18366,6 +18369,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 11acfa655d2420f46b49881a73e6e2d0, type: 3}
   - {fileID: 21300000, guid: 256fd7ac16bb71040bf96d9e6157c480, type: 3}
   - {fileID: 21300000, guid: 2386434b0216ef54aa64fd4af8f9e139, type: 3}
+  - {fileID: 21300000, guid: 7bb9ade61f42ce74cbf808d43dcd1dfe, type: 3}
   - {fileID: 21300000, guid: a65b48b1f09b06846b73408833254249, type: 3}
   - {fileID: 21300000, guid: efb96d134e79620498817086a3ab889f, type: 3}
 --- !u!114 &846269987
